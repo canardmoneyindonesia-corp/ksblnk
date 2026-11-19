@@ -1,0 +1,1860 @@
+/* Mobile-first. Desktop tweaks live in the min-width queries at the bottom. */
+:root {
+  --bg: #f4f3ef;
+  --ink: #111111;
+  --muted: #6d6d68;
+  --line: #dcdad3;
+  --card: #e9e7e0;
+  --accent: #d8ff3c;
+  --danger: #d6331c;
+  --gutter: 12px;
+  --bar-h: 64px;
+  /* Gap between the floating bag pill and the screen edges. */
+  --float: 12px;
+  /* Frosted "cloud" glass used by the bag pill / sheet. */
+  --glass: rgb(255 255 255 / 0.55);
+  --glass-strong: rgb(255 255 255 / 0.78);
+  --glass-edge: rgb(255 255 255 / 0.75);
+  --glass-shadow: 0 10px 30px rgb(17 17 17 / 0.14), 0 2px 8px rgb(17 17 17 / 0.08);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Type. Display = Adobe Kis (logotype, titles), UI = SF Pro, script = Acroterion JF (accents).
+     Kis + Acroterion load from the Adobe Fonts kit (NEXT_PUBLIC_ADOBE_FONTS_KIT); the quoted
+     names catch locally installed copies. SF Pro can't be served on the web under Apple's
+     license, so it comes from the system stack: SF Pro on Apple devices, Helvetica/Segoe/Roboto elsewhere. */
+  --font-display: 'adobe-kis', 'Adobe Kis', 'Iowan Old Style', Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue',
+    'Segoe UI', Roboto, Arial, sans-serif;
+  --font-script: 'acroterion-jf', 'Acroterion JF', 'Snell Roundhand', cursive;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.4;
+  min-height: 100dvh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+h1 {
+  margin: 0;
+}
+
+main {
+  padding-bottom: calc(var(--bar-h) + var(--float) + var(--safe-bottom) + 24px);
+}
+
+/* ---------- header ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 var(--gutter);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.bag-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  min-height: 44px;
+}
+
+.bag-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  border: 1px solid var(--ink);
+  font-size: 12px;
+}
+
+.bag-count--on {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+/* ---------- product grid: 2 columns on phones ---------- */
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: var(--gutter);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px var(--gutter);
+}
+
+.card {
+  display: block;
+}
+
+.card__media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--card);
+  overflow: hidden;
+}
+
+.card__media img {
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.card:active .card__media img {
+  transform: scale(0.98);
+}
+
+.card__status {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+}
+
+.card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 8px;
+}
+
+.card__name {
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.card__price {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 7px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.badge--out {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.badge--low {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.badge--soon {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.empty {
+  padding: 40px var(--gutter);
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ---------- product page ---------- */
+.pdp__media {
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  top: 10px;
+  left: var(--gutter);
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 16px 0 10px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.18);
+  transition: transform 0.15s ease;
+}
+
+.back-btn:active {
+  transform: scale(0.96);
+}
+
+.back-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.gallery {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  gap: 4px;
+}
+
+.gallery::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery__slide {
+  position: relative;
+  flex: 0 0 92%;
+  aspect-ratio: 4 / 5;
+  scroll-snap-align: start;
+  background: var(--card);
+}
+
+.gallery__slide:only-child {
+  flex-basis: 100%;
+}
+
+.gallery__slide img {
+  object-fit: cover;
+}
+
+.pdp__info {
+  padding: 16px var(--gutter) 0;
+}
+
+.pdp__name {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.pdp__price {
+  display: block;
+  margin-top: 4px;
+  font-size: 17px;
+}
+
+.pdp__desc {
+  color: var(--muted);
+  margin: 20px 0 0;
+  white-space: pre-line;
+}
+
+.buybox {
+  margin-top: 18px;
+}
+
+.sizes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 8px;
+}
+
+.sizes--nudge {
+  animation: nudge 0.5s;
+}
+
+@keyframes nudge {
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+.size {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  border: 1px solid var(--line);
+  background: transparent;
+  font-weight: 600;
+}
+
+.size small {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--danger);
+}
+
+.size--on {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.size--out {
+  color: var(--muted);
+  text-decoration: line-through;
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.size__bag {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.cta-hint {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cta-hint--error {
+  color: var(--danger);
+}
+
+.cta-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cta-row .btn {
+  flex: 1;
+  min-width: 0;
+}
+
+.btn__plus {
+  font-size: 20px;
+  line-height: 1;
+  margin-right: 6px;
+}
+
+/* Quantity stepper on the product page: "+" adds one more unit straight to the bag. */
+.stepper {
+  display: flex;
+  align-items: stretch;
+  flex: none;
+  border: 1px solid var(--ink);
+  background: var(--bg);
+}
+
+.stepper button {
+  width: 48px;
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.stepper button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.stepper span {
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.stepper__push {
+  background: var(--accent) !important;
+  animation: push 1.6s ease-in-out infinite;
+}
+
+@keyframes push {
+  0%, 100% { box-shadow: inset 0 0 0 0 var(--ink); }
+  50% { box-shadow: inset 0 0 0 2px var(--ink); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepper__push {
+    animation: none;
+  }
+}
+
+/* Thumb-reachable fixed action bar on phones. */
+.cta-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 15;
+  padding: 10px var(--gutter) calc(10px + var(--safe-bottom));
+  background: linear-gradient(to top, var(--bg) 70%, transparent);
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px;
+  border: 1px solid var(--ink);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.btn--primary {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.btn--primary:disabled {
+  background: var(--line);
+  border-color: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.btn--ghost {
+  background: transparent;
+  margin-top: 12px;
+}
+
+/* ---------- checkout ---------- */
+.checkout {
+  padding: 16px var(--gutter);
+}
+
+.checkout__title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* "1 Bag / 2 Shipping" progress */
+.steps {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+}
+
+.steps__item {
+  flex: 1;
+  padding-top: 8px;
+  border-top: 3px solid var(--line);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.steps__item > * {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+}
+
+.steps__item.is-current,
+.steps__item.is-done {
+  border-top-color: var(--ink);
+  color: var(--ink);
+}
+
+.steps__num {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid currentColor;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.steps__item.is-current .steps__num,
+.steps__item.is-done .steps__num {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+
+.steps__item.is-done a:hover {
+  text-decoration: underline;
+}
+
+/* Compact bag recap on the shipping step (the whole row taps back to the bag). */
+.recap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--card);
+}
+
+.recap__thumbs {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.recap__thumb,
+.recap__more {
+  position: relative;
+  width: 32px;
+  aspect-ratio: 4 / 5;
+  background: var(--line);
+  outline: 2px solid var(--card);
+  overflow: hidden;
+}
+
+.recap__thumb + .recap__thumb,
+.recap__thumb + .recap__more {
+  margin-left: -8px;
+}
+
+.recap__thumb img {
+  object-fit: cover;
+}
+
+.recap__more {
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.recap__text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.recap__text span {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.recap__edit {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.btn--icon {
+  gap: 8px;
+}
+
+.lines {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.line--out .line__media,
+.line--out .line__name {
+  opacity: 0.45;
+}
+
+.line--out .line__meta strong {
+  color: var(--danger);
+}
+
+.line__media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--card);
+}
+
+.line__media img {
+  object-fit: cover;
+}
+
+.line__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.line__name {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.line__meta {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.line__price {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.qty {
+  display: inline-flex;
+  align-items: center;
+  margin-top: auto;
+  border: 1px solid var(--line);
+  width: fit-content;
+}
+
+.qty button {
+  width: 40px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  font-size: 18px;
+}
+
+.qty button:disabled {
+  opacity: 0.3;
+}
+
+.qty span {
+  min-width: 24px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary {
+  margin-top: 16px;
+}
+
+.summary__row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.summary__note {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+
+.alert {
+  padding: 12px;
+  margin: 0 0 12px;
+  background: var(--card);
+  font-size: 14px;
+}
+
+.alert--error {
+  margin-top: 12px;
+  background: color-mix(in srgb, var(--danger) 12%, var(--bg));
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.notice {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 48px var(--gutter);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.notice h1 {
+  font-size: 28px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+}
+
+.notice p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* ---------- larger screens ---------- */
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 24px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 32px var(--gutter);
+  }
+
+  .pdp {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 32px;
+    padding: var(--gutter);
+  }
+
+  .gallery {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .gallery__slide {
+    flex-basis: auto;
+  }
+
+  .pdp__info {
+    position: sticky;
+    top: 76px;
+    align-self: start;
+    padding: 0;
+  }
+
+  .cta-bar {
+    position: static;
+    padding: 16px 0 0;
+    background: none;
+  }
+
+  main {
+    padding-bottom: 48px;
+  }
+
+  .checkout {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+}
+
+/* ---------- shipping form (IDR / Indonesia) ---------- */
+.ship {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-top: 24px;
+}
+
+.ship__group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ship__title {
+  width: 100%;
+  padding: 0 0 8px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--ink);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.ship__hint {
+  margin: -4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.field > span:first-child {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: #fff;
+  color: var(--ink);
+  /* 16px stops iOS from zooming into the field */
+  font: inherit;
+  font-size: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.field textarea {
+  resize: vertical;
+  line-height: 1.4;
+}
+
+.field ::placeholder {
+  color: #b3b1aa;
+  opacity: 1;
+}
+
+/* appearance:none drops the native arrow: draw one. */
+.field--select select {
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath d='M5 9l7 7 7-7' fill='none' stroke='%23111' stroke-width='3' stroke-linecap='square'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
+}
+
+.field--select select[data-empty] {
+  color: #b3b1aa;
+}
+
+.field--select option {
+  color: var(--ink);
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.field [aria-invalid='true'] {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 4%, #fff);
+}
+
+.field__err {
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.field-row {
+  display: flex;
+  gap: 10px;
+}
+
+.field--postal {
+  flex: 0 0 110px;
+}
+
+@media (max-width: 420px) {
+  .field-row:has(input[type='email']) {
+    flex-direction: column;
+  }
+}
+
+.summary__row--sub {
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+/* Checkout totals: framed block with a strong total line. */
+.summary--card {
+  margin-top: 28px;
+  padding: 14px;
+  border: 1px solid var(--ink);
+  background: #fff;
+}
+
+.summary__row--total {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 20px;
+  letter-spacing: -0.01em;
+}
+
+.summary--card .summary__note {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin-top: 10px;
+  line-height: 1.35;
+}
+
+.summary--card .summary__note .icon {
+  margin-top: 2px;
+}
+
+.notice__ref {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.notice .btn--ghost {
+  margin-top: 0;
+}
+
+/* ---------- home: "+" quick add on each card ---------- */
+.grid__item {
+  position: relative;
+}
+
+/* Covers exactly the card photo (same 4:5 box); only its buttons take taps. */
+.quick {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  aspect-ratio: 4 / 5;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.quick > * {
+  pointer-events: auto;
+}
+
+.quick__plus {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.25);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.quick__plus:active {
+  transform: scale(0.92);
+}
+
+.quick__plus--done {
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* Open: the "+" turns into a "×" that closes the size list. */
+.quick__plus--open {
+  transform: rotate(45deg);
+}
+
+.quick__plus--open:active {
+  transform: rotate(45deg) scale(0.92);
+}
+
+.quick__plus .size__bag {
+  top: -4px;
+  right: -4px;
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.quick--open {
+  z-index: 6;
+}
+
+.quick__msg {
+  position: absolute;
+  right: 8px;
+  bottom: 56px;
+  padding: 3px 7px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Size dropdown: a list attached to the "+", unfolding upwards from it. */
+.quick__menu {
+  position: absolute;
+  right: 8px;
+  bottom: 56px;
+  width: min(220px, calc(100vw - 16px));
+  max-height: 60vh;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--ink);
+  box-shadow: 0 6px 22px rgb(0 0 0 / 0.25);
+  transform-origin: bottom right;
+  animation: drop 0.14s ease-out;
+}
+
+.quick__menu-head {
+  padding: 6px 12px 4px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.quick__menu-head--error {
+  color: var(--danger);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+}
+
+/* One row per size: label, stock note, and a −/count/+ stepper on the right. */
+.quick__opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 6px 0 12px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.quick__opt--in {
+  background: var(--card);
+}
+
+.quick__opt--out .quick__opt-label {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.quick__opt-label {
+  min-width: 2ch;
+}
+
+.quick__opt-meta {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.quick__opt-meta--low {
+  color: var(--danger);
+}
+
+.quick__step {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  border: 1px solid var(--ink);
+  background: var(--bg);
+}
+
+.quick__step button {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.quick__step button:hover:not(:disabled),
+.quick__step button:focus-visible {
+  background: var(--card);
+  outline: none;
+}
+
+.quick__step button:active:not(:disabled) {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.quick__step button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.quick__step-n {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.quick__opt--in .quick__step-n {
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.quick__menu-foot {
+  padding: 6px 6px 2px;
+  border-top: 1px solid var(--line);
+}
+
+.quick__done {
+  width: 100%;
+  min-height: 36px;
+  border: 0;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@keyframes drop {
+  from { transform: scaleY(0.85); opacity: 0; }
+}
+
+.quick__backdrop {
+  display: none;
+}
+
+/* Phones/tablets: the size list slides up from the bottom of the screen as a sheet. */
+@media (max-width: 1023.98px) {
+  /* Above the bag bar (31) so the sheet covers it. */
+  .quick--open {
+    z-index: 40;
+  }
+
+  .quick__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgb(17 17 17 / 0.4);
+    animation: fade 0.2s ease-out;
+  }
+
+  .quick__menu {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-height: 70dvh;
+    padding: 8px 0 calc(8px + var(--safe-bottom));
+    border: 0;
+    border-top: 1px solid var(--ink);
+    box-shadow: 0 -12px 40px rgb(0 0 0 / 0.2);
+    overscroll-behavior: contain;
+    animation: sheet-up 0.22s ease-out;
+  }
+
+  .quick__menu-head {
+    padding: 10px var(--gutter) 10px;
+    font-size: 11px;
+  }
+
+  .quick__menu-head--error {
+    font-size: 13px;
+  }
+
+  .quick__opt {
+    min-height: 56px;
+    padding: 0 var(--gutter);
+    font-size: 16px;
+  }
+
+  .quick__opt-meta {
+    font-size: 12px;
+  }
+
+  .quick__step button {
+    width: 44px;
+    height: 40px;
+    font-size: 22px;
+  }
+
+  .quick__step-n {
+    min-width: 32px;
+    font-size: 16px;
+  }
+
+  .quick__menu-foot {
+    padding: 10px var(--gutter) 0;
+  }
+
+  .quick__done {
+    min-height: 48px;
+    font-size: 15px;
+  }
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+}
+
+/* ---------- home: bag pill + bottom sheet ---------- */
+/* Closed: a floating frosted pill. Open: the same glass grows into a rounded sheet. */
+.sheet {
+  position: fixed;
+  left: var(--float);
+  right: var(--float);
+  bottom: calc(var(--float) + var(--safe-bottom));
+  z-index: 31;
+  display: flex;
+  flex-direction: column;
+  max-height: 80dvh;
+  border: 1px solid var(--glass-edge);
+  border-radius: calc(var(--bar-h) / 2);
+  /* Soft white puffs over frosted glass: the "cloud". */
+  background:
+    radial-gradient(120% 140% at 12% 0%, rgb(255 255 255 / 0.7), transparent 55%),
+    radial-gradient(90% 120% at 88% 110%, rgb(255 255 255 / 0.45), transparent 60%),
+    var(--glass);
+  /* Unprefixed only: the CSS build adds -webkit- itself (writing both makes it drop this one). */
+  backdrop-filter: blur(22px) saturate(1.6);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 rgb(255 255 255 / 0.9);
+  overflow: hidden;
+  animation: rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+
+/* No backdrop-filter support: fall back to a solid, still-soft pill. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .sheet {
+    background: #fbfbf9;
+  }
+}
+
+.sheet--open {
+  left: 8px;
+  right: 8px;
+  bottom: calc(8px + var(--safe-bottom));
+  border-radius: 28px;
+  background:
+    radial-gradient(120% 60% at 10% 0%, rgb(255 255 255 / 0.85), transparent 60%),
+    var(--glass-strong);
+  box-shadow: 0 -8px 50px rgb(17 17 17 / 0.22), inset 0 1px 0 rgb(255 255 255 / 0.9);
+  animation: sheet-open 0.32s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Drag zone: handle + bar. touch-action none so a swipe moves the sheet, not the page. */
+.sheet__grab {
+  position: relative;
+  flex-shrink: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.sheet__grab:active {
+  cursor: grabbing;
+}
+
+.sheet__handle {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 32px;
+  height: 4px;
+  margin-left: -16px;
+  border-radius: 2px;
+  background: rgb(17 17 17 / 0.18);
+  pointer-events: none;
+}
+
+.sheet--open .sheet__handle {
+  top: 8px;
+  width: 40px;
+  margin-left: -20px;
+  height: 5px;
+  background: rgb(17 17 17 / 0.25);
+}
+
+.bagbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--bar-h);
+  padding: 8px 8px 8px 10px;
+}
+
+.sheet--open .bagbar {
+  padding: 18px 16px 8px;
+}
+
+.bagbar .btn {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 14px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 0;
+  box-shadow: 0 4px 14px rgb(17 17 17 / 0.25);
+  transition: transform 0.15s ease-out;
+}
+
+.bagbar .btn:active {
+  transform: scale(0.97);
+}
+
+.bagbar__toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  text-align: left;
+}
+
+.sheet--open .bagbar__toggle {
+  flex: 1;
+}
+
+.bagbar__toggle .bag-count {
+  min-width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  border: 0;
+  font-weight: 700;
+  animation: bump 0.35s ease-out;
+}
+
+.bagbar__label {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.bagbar__label small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.bagbar__chev {
+  margin-left: auto;
+  font-size: 12px;
+}
+
+.sheet__body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 16px;
+}
+
+.sheet__hint {
+  margin: 12px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sheet__cta {
+  position: sticky;
+  bottom: 0;
+  /* Full sheet width so the fade has no visible side edges. */
+  margin: 0 -16px;
+  padding: 16px 16px 14px;
+  /* Fades the list out under the button instead of a hard stripe on the glass. */
+  background: linear-gradient(to top, rgb(255 255 255 / 0.9) 55%, transparent);
+}
+
+.sheet__cta .btn {
+  border-radius: 999px;
+  border: 0;
+  box-shadow: 0 4px 14px rgb(17 17 17 / 0.25);
+}
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgb(17 17 17 / 0.3);
+  backdrop-filter: blur(3px);
+  animation: fade 0.2s ease-out;
+}
+
+.bagbar-spacer {
+  display: none;
+}
+
+/* Inside the round sheet, the bag lines go soft too (the checkout page keeps its square look). */
+.sheet .line__media {
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.sheet .qty {
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 0.6);
+}
+
+.sheet .line__size select {
+  border-radius: 999px;
+  background-position: right 11px center;
+  padding-left: 12px;
+}
+
+@keyframes sheet-open {
+  from { transform: translateY(30%); opacity: 0.6; }
+}
+
+/* "+" in a bag line, highlighted while one more unit is allowed. */
+.qty button.qty__push {
+  background: var(--accent);
+}
+
+@keyframes rise {
+  from { transform: translateY(16px); opacity: 0; }
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+}
+
+@keyframes bump {
+  50% { transform: scale(1.35); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick__menu,
+  .quick__backdrop,
+  .sheet,
+  .sheet--open,
+  .sheet-backdrop,
+  .bagbar__toggle .bag-count {
+    animation: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sheet,
+  .sheet--open {
+    left: auto;
+    right: var(--gutter);
+    bottom: 16px;
+    width: 420px;
+  }
+
+  .bagbar-spacer {
+    display: block;
+    height: 80px;
+  }
+}
+
+/* ---------- Music tile (v1) ---------- */
+/* Right column, 2nd row: col 2 of 2 on phones, col 4 of 4 on desktop. Other cards auto-flow around it. */
+.grid__item--music {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+@media (min-width: 1024px) {
+  .grid__item--music {
+    grid-column: 4;
+  }
+}
+
+.music__media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  border: 0;
+  background: radial-gradient(circle at 50% 42%, #2a2a28 0%, var(--ink) 70%);
+  overflow: hidden;
+  cursor: pointer;
+  color: var(--bg);
+}
+
+.music__disc-wrap {
+  position: relative;
+  width: 78%;
+  aspect-ratio: 1;
+  margin-bottom: 14%;
+}
+
+.music__ring {
+  position: absolute;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  transform: rotate(-90deg);
+}
+
+.music__ring-track,
+.music__ring-fill {
+  fill: none;
+  stroke-width: 1.6;
+}
+
+.music__ring-track {
+  stroke: rgb(255 255 255 / 0.12);
+}
+
+.music__ring-fill {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.25s linear;
+}
+
+.music__disc {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 9%, rgb(0 0 0 / 0.35) 9.5% 10%, transparent 10.5%),
+    repeating-radial-gradient(circle, rgb(255 255 255 / 0.05) 0 1px, transparent 1px 3px),
+    conic-gradient(from 0deg, #cfd3d6, #f3e9ff, #b7e4ff, #e6ffd0, #ffe0f0, #cfd3d6, #fff6c9, #c6d8ff, #cfd3d6);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.5), inset 0 0 0 1px rgb(255 255 255 / 0.25);
+  animation: music-spin 3.2s linear infinite;
+  animation-play-state: paused;
+}
+
+/* Center hole. */
+.music__disc::after {
+  content: '';
+  position: absolute;
+  inset: 46%;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.4);
+}
+
+.music__label {
+  position: absolute;
+  inset: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10% 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: clamp(7px, 1.6vw, 10px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.music__media--playing .music__disc {
+  animation-play-state: running;
+}
+
+.music__btn {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 14px;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.35);
+  transition: transform 0.15s ease;
+}
+
+.music__media:active .music__btn {
+  transform: scale(0.92);
+}
+
+.music__bars {
+  position: absolute;
+  left: 8px;
+  right: 58px;
+  bottom: 10px;
+  height: 16%;
+  width: calc(100% - 66px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.music__media--playing .music__bars {
+  opacity: 0.9;
+}
+
+.music__tag {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  padding: 3px 7px;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.music__media--playing .music__tag {
+  opacity: 1;
+}
+
+.music .card__name {
+  display: block;
+}
+
+.music .card__info {
+  padding-top: 8px;
+}
+
+@keyframes music-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music__disc {
+    animation: none;
+  }
+}
+
+/* ---------- checkout: "Add a little extra" (cheapest items, small cards) ---------- */
+.addons {
+  margin-top: 24px;
+}
+
+.addons__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.addons__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.addons__sub {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Phones: one swipeable row that bleeds to the screen edges. */
+.addons__list {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  margin: 0 calc(var(--gutter) * -1);
+  padding: 0 var(--gutter) 4px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 var(--gutter);
+  scrollbar-width: none;
+}
+
+.addons__list::-webkit-scrollbar {
+  display: none;
+}
+
+.addon {
+  position: relative;
+  flex: 0 0 112px;
+  scroll-snap-align: start;
+}
+
+.addon__link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.addon__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  margin-bottom: 4px;
+  background: var(--card);
+  overflow: hidden;
+}
+
+.addon__media img {
+  object-fit: cover;
+}
+
+.addon__name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.addon__price {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Smaller "+" to fit the small card. */
+.addon .quick__plus {
+  right: 6px;
+  bottom: 6px;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+}
+
+.addon .quick__plus--done {
+  font-size: 15px;
+}
+
+.addon .quick__msg {
+  right: 4px;
+  left: 4px;
+  bottom: 44px;
+  text-align: center;
+}
+
+/* Desktop: a plain grid (no scroll container, so the size dropdown isn't clipped). */
+@media (min-width: 1024px) {
+  .addons__list {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .addon .quick__menu {
+    bottom: 44px;
+    right: 0;
+    width: 210px;
+  }
+}
+
+/* ---------- bag line: size picker (native select, styled as a chip) ---------- */
+.line__size {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.line__size select {
+  min-height: 30px;
+  padding: 2px 26px 2px 10px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: #fff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24'%3E%3Cpath d='M5 9l7 7 7-7' fill='none' stroke='%23111' stroke-width='3' stroke-linecap='square'/%3E%3C/svg%3E")
+    no-repeat right 9px center;
+  color: var(--ink);
+  font: inherit;
+  /* 16px stops iOS from zooming in when the picker opens */
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.line__size select:hover,
+.line__size select:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+/* Script accent (Acroterion JF): short decorative words only, never body copy or UI. */
+.script {
+  font-family: var(--font-script);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}

@@ -1,0 +1,25 @@
+# Local infrastructure only. Non-default host ports (55432, 6380) avoid clashing with a local Postgres / Redis. In production use managed Postgres (CMS) and managed Redis with AOF persistence (API).
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: kskblnk
+      POSTGRES_PASSWORD: kskblnk
+      POSTGRES_DB: cms
+    ports:
+      - "55432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    # AOF with fsync every second: inventory counters survive a restart.
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    ports:
+      - "6380:6379"
+    volumes:
+      - redisdata:/data
+
+volumes:
+  pgdata:
+  redisdata:
