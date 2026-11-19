@@ -46,6 +46,23 @@ pnpm drop:sim          # oversell / load test (args: units buyers concurrency)
 - Live drop monitor: `curl -H "authorization: Bearer $INTERNAL_SECRET" localhost:4000/api/internal/inventory`. Paid orders with shipping addresses: `/api/internal/orders`.
 - **Orders / fulfilment**: CMS admin → Orders. The CMS pulls new paid orders from the API (`/api/internal/orders/feed`, cursor-based) on boot and every `ORDER_IMPORT_INTERVAL_SECONDS` (30 by default), or on demand with "Import new orders now". Payment and address fields are read-only; staff move each order through 3 statuses: **Ordered** (processing) → **Shipped** (on the way) → **Delivered**. Shipped requires the courier (JNE by default) and the shipping code (resi), and stamps the date; Delivered stamps its date too. Oversold orders arrive as "Refund needed". If the CMS is down during a drop it catches up on the next import.
 
+## Demo mode (no database)
+
+Deploy to Vercel with **no environment variables at all** and the whole buying flow works: grid, product pages, live stock badges, bag, shipping form, checkout and the order confirmation. Nothing to host.
+
+| App | Switch (automatic) | In demo mode |
+|---|---|---|
+| api | `REDIS_URL` empty | In-memory Redis (`ioredis-mock`) running the same Lua scripts, seeded from the demo catalog. Payments are always `mock`, so every checkout is confirmed instantly. |
+| web | Vercel: no `DATABASE_URL` · local: no `CMS_URL` | Products come from the demo catalog, pre-rendered at build time. The bag shows "Demo store · no payment is taken". |
+| cms | no `DATABASE_URL` | `/cms/*` shows a short "CMS is off in demo mode" page instead of crashing. |
+
+- `DEMO_MODE=1` forces demo mode on and `DEMO_MODE=0` forces it off, in both web and api.
+- To change what the demo sells, edit [`packages/types/src/demo-catalog.json`](packages/types/src/demo-catalog.json). `stock` is the number of units on sale when an instance starts, and photos live in `apps/web/public/demo/`. The defaults are the 7 pieces from the modeled shoot, with placeholder prices. The white tee is almost gone and the tank is sold out, so the "Last N" and "Sold out" states show up.
+- The stock lives in each serverless instance's memory. A cold start resets it to the JSON values, and two instances don't share sales. That's fine for a demo and never acceptable for a real drop. For the same reason, an order id an instance doesn't know is reported as paid.
+- `/api/internal/*` stays locked: `INTERNAL_SECRET` gets a random value unless you set it.
+- Locally, `pnpm dev` with empty `.env` files works too: the storefront forwards `/api/*` to the API on :4000 whenever `NEXT_PUBLIC_API_URL` is unset.
+- Going live: add `DATABASE_URL` + `PAYLOAD_SECRET` (CMS) and `REDIS_URL` + `INTERNAL_SECRET` (API), plus the other production settings below, then redeploy.
+
 ## Deploying on Vercel
 
 `vercel.json` deploys the three apps as **one Vercel project with services**, on one domain:

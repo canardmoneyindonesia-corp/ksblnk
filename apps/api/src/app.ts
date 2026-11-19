@@ -8,13 +8,14 @@ import {
   type OrderFeedResponse,
   type OrderStatus,
   type OrderStatusResponse,
+  type StockResponse,
 } from '@kskblnk/types'
 import { Hono, type Context } from 'hono'
 import { bearerAuth } from 'hono/bearer-auth'
 import { bodyLimit } from 'hono/body-limit'
 import { cors } from 'hono/cors'
 import { HTTPException } from 'hono/http-exception'
-import { API_BASE_PATH, config } from './config'
+import { API_BASE_PATH, config, DEMO } from './config'
 import { createPayment, verifyNotification, type DokuNotification } from './doku'
 import {
   attachPayment,
@@ -48,7 +49,7 @@ app.get('/stock', async (c) => {
   // Put the API behind a CDN: s-maxage=2 means the origin sees ~1 request / 2s
   // per edge location no matter how many phones are polling.
   c.header('Cache-Control', 'public, max-age=1, s-maxage=2, stale-while-revalidate=10')
-  return c.json({ ...data, shippingFee: config.SHIPPING_FEE })
+  return c.json({ ...data, shippingFee: config.SHIPPING_FEE, demo: DEMO } satisfies StockResponse)
 })
 
 /* --------------------------------------------------------------- checkout */
@@ -124,6 +125,11 @@ app.post('/checkout', bodyLimit({ maxSize: 8 * 1024 }), async (c) => {
 app.get('/checkout/:id', async (c) => {
   const resv = await getReservation(c.req.param('id'))
   c.header('Cache-Control', 'no-store')
+  if (!resv && DEMO && /^KB[0-9A-Z]{16,28}$/.test(c.req.param('id'))) {
+    // Demo memory is per serverless instance: this poll may hit an instance that never saw
+    // the order. Demo checkouts are confirmed instantly (mock payments), so report it paid.
+    return c.json({ status: 'sold', paymentUrl: null, payBefore: null, amount: null } satisfies OrderStatusResponse)
+  }
   if (!resv) return c.json({ status: 'missing', paymentUrl: null, payBefore: null, amount: null } satisfies OrderStatusResponse, 404)
   return c.json({
     status: resv.status,

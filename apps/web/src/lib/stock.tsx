@@ -11,19 +11,34 @@ interface StockState {
   ready: boolean
   /** Flat shipping fee in rupiah, from the API (single source of truth). */
   shippingFee: number
+  /** The API runs in demo mode: in-memory stock, no real payment. */
+  demo: boolean
   /** serverTime - clientTime, so drop countdowns don't depend on the phone's clock. */
   offset: number
   refresh: () => void
 }
 
-const Ctx = createContext<StockState>({ stock: {}, ready: false, shippingFee: 0, offset: 0, refresh: () => {} })
+const Ctx = createContext<StockState>({
+  stock: {},
+  ready: false,
+  shippingFee: 0,
+  demo: false,
+  offset: 0,
+  refresh: () => {},
+})
 
 /**
  * Live availability, polled only while the tab is visible. The response is
  * CDN-cached for ~2s, so 50k phones polling cost the API almost nothing.
  */
 export function StockProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<Omit<StockState, 'refresh'>>({ stock: {}, ready: false, shippingFee: 0, offset: 0 })
+  const [state, setState] = useState<Omit<StockState, 'refresh'>>({
+    stock: {},
+    ready: false,
+    shippingFee: 0,
+    demo: false,
+    offset: 0,
+  })
   const ctrl = useRef<AbortController | null>(null)
 
   const refresh = useCallback(() => {
@@ -35,7 +50,13 @@ export function StockProvider({ children }: { children: React.ReactNode }) {
       .getStock(c.signal)
       .then((r) => {
         const rtt = Date.now() - sent
-        setState({ stock: r.stock, ready: true, shippingFee: r.shippingFee ?? 0, offset: r.at - (sent + rtt / 2) })
+        setState({
+          stock: r.stock,
+          ready: true,
+          shippingFee: r.shippingFee ?? 0,
+          demo: r.demo === true,
+          offset: r.at - (sent + rtt / 2),
+        })
       })
       .catch(() => {
         // API unreachable: keep last known stock. Checkout still enforces availability server-side.

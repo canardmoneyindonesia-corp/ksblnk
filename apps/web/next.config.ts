@@ -27,6 +27,13 @@ const nextConfig: NextConfig = {
     dangerouslyAllowLocalIP: cmsIsLocal,
   },
   poweredByHeader: false,
+  // Local run with no NEXT_PUBLIC_API_URL (e.g. demo mode with an empty .env): the browser
+  // calls the relative /api like on Vercel, so forward it to the API on :4000. Array form =
+  // afterFiles, so the storefront's own /api/revalidate route still wins.
+  async rewrites() {
+    if (process.env.VERCEL || process.env.NEXT_PUBLIC_API_URL) return []
+    return [{ source: '/api/:path*', destination: `${process.env.API_URL ?? 'http://localhost:4000'}/api/:path*` }]
+  },
 }
 
 export default nextConfig

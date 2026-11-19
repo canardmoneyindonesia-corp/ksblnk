@@ -1,6 +1,8 @@
 import { fetchProducts } from '@kskblnk/sdk'
 import type { Product } from '@kskblnk/types'
+import { DEMO_PRODUCTS } from '@kskblnk/types/demo'
 import { cache } from 'react'
+import { isDemo } from './demo'
 
 /** Product pages are re-generated at most every 5 min, or instantly when the CMS calls /api/revalidate. */
 export const REVALIDATE_SECONDS = 300
@@ -24,6 +26,7 @@ function cmsApiUrl(): URL | null {
 }
 
 async function load(): Promise<Product[]> {
+  if (isDemo()) return DEMO_PRODUCTS
   const url = cmsApiUrl()
   if (!url) {
     // Vercel build without CMS_BUILD_URL: pre-render empty pages; ISR and the CMS's

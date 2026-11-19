@@ -42,7 +42,7 @@ type FieldErrors = Partial<Record<keyof ShippingInput, string>>
 function Bag({ products, step }: { products: Product[]; step: 'bag' | 'shipping' }) {
   const router = useRouter()
   const lines = useCart()
-  const { stock, ready, shippingFee, refresh } = useStock()
+  const { stock, ready, shippingFee, demo, refresh } = useStock()
   const [shipping, setShipping] = useSavedShipping()
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [pending, setPending] = useState(false)
@@ -148,7 +148,13 @@ function Bag({ products, step }: { products: Product[]; step: 'bag' | 'shipping'
         <span>{formatPrice(total)}</span>
       </div>
       <p className="summary__note">
-        <LockIcon /> Secure payment · QRIS, GoPay, OVO, DANA, ShopeePay, virtual account or card.
+        {demo ? (
+          <>Demo store · no payment is taken, orders are confirmed instantly.</>
+        ) : (
+          <>
+            <LockIcon /> Secure payment · QRIS, GoPay, OVO, DANA, ShopeePay, virtual account or card.
+          </>
+        )}
       </p>
     </div>
   )

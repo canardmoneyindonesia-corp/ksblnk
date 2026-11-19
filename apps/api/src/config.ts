@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
 
 try {
@@ -15,6 +16,19 @@ export const API_BASE_PATH = '/api'
 
 const onVercel = Boolean(process.env.VERCEL)
 
+/**
+ * Demo mode: no Redis. Inventory lives in this process's memory (ioredis-mock, same Lua
+ * scripts) and is seeded from packages/types/src/demo-catalog.json; payments are mocked.
+ * On by default when REDIS_URL is empty, so a Vercel deploy with no env vars works out of
+ * the box. DEMO_MODE=1 forces it on, DEMO_MODE=0 forces it off (then REDIS_URL defaults to
+ * the local docker Redis).
+ * Each serverless instance has its own memory: stock resets on cold starts and isn't shared
+ * between instances. Fine to click through the flow, never for a real drop.
+ */
+const demoFlag = process.env.DEMO_MODE?.trim().toLowerCase()
+export const DEMO =
+  demoFlag === '1' || demoFlag === 'true' || (demoFlag !== '0' && demoFlag !== 'false' && !process.env.REDIS_URL)
+
 /** Public storefront origin on Vercel: same domain as the API (production domain, else this deployment). */
 function vercelOrigin() {
   const host =
@@ -28,7 +42,8 @@ const schema = z.object({
   PORT: z.coerce.number().default(4000),
   REDIS_URL: z.string().default('redis://localhost:6380'),
   WEB_ORIGIN: z.string().default(vercelOrigin() ?? 'http://localhost:3000'),
-  INTERNAL_SECRET: z.string().min(8),
+  // Demo: random unless set, so /internal/* stays locked even with an empty environment.
+  INTERNAL_SECRET: DEMO ? z.string().min(8).default(randomUUID()) : z.string().min(8),
 
   PAYMENTS_MODE: z.enum(['mock', 'doku']).default('mock'),
   DOKU_ENV: z.enum(['sandbox', 'production']).default('sandbox'),
@@ -66,6 +81,12 @@ if (!parsed.success) {
 }
 
 export const config = parsed.data
+
+if (DEMO && config.PAYMENTS_MODE !== 'mock') {
+  // DOKU notifications could land on an instance that never saw the order: demo always mocks.
+  console.warn('[config] demo mode: PAYMENTS_MODE forced to "mock"')
+  config.PAYMENTS_MODE = 'mock'
+}
 
 if (config.PAYMENTS_MODE === 'doku' && (!config.DOKU_CLIENT_ID || !config.DOKU_SECRET_KEY)) {
   console.error('PAYMENTS_MODE=doku requires DOKU_CLIENT_ID and DOKU_SECRET_KEY')

@@ -1,0 +1,396 @@
+{
+  "products": [
+    {
+      "id": "demo-kasablanka-polo-yellow",
+      "slug": "kasablanka-polo-yellow",
+      "name": "Kasablanka Polo Yellow",
+      "price": 450000,
+      "description": "Yellow piqué polo with the KASABLANKA chest print and patches. Limited run, no restock guaranteed.",
+      "dropAt": null,
+      "images": [
+        {
+          "url": "/demo/kasablanka-polo-yellow-1.jpg",
+          "alt": "Kasablanka Polo Yellow, front",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/kasablanka-polo-yellow-2.jpg",
+          "alt": "Kasablanka Polo Yellow, on the phone",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/kasablanka-polo-yellow-3.jpg",
+          "alt": "Kasablanka Polo Yellow, full look",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/kasablanka-polo-yellow-4.jpg",
+          "alt": "Kasablanka Polo Yellow, with a laptop",
+          "width": 1200,
+          "height": 1500
+        }
+      ],
+      "variants": [
+        {
+          "sku": "POLO-KSB-YLW-S",
+          "label": "S",
+          "stock": 4
+        },
+        {
+          "sku": "POLO-KSB-YLW-M",
+          "label": "M",
+          "stock": 8
+        },
+        {
+          "sku": "POLO-KSB-YLW-L",
+          "label": "L",
+          "stock": 8
+        },
+        {
+          "sku": "POLO-KSB-YLW-XL",
+          "label": "XL",
+          "stock": 3
+        }
+      ]
+    },
+    {
+      "id": "demo-ete-2026-tee-yellow",
+      "slug": "ete-2026-tee-yellow",
+      "name": "2026 Été Tee Yellow",
+      "price": 325000,
+      "description": "Yellow tee, \"2026 été CASA des BLANÇA\" print on the chest. Limited run, no restock guaranteed.",
+      "dropAt": null,
+      "images": [
+        {
+          "url": "/demo/ete-2026-tee-yellow-1.jpg",
+          "alt": "2026 Été Tee Yellow, close-up",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/ete-2026-tee-yellow-2.jpg",
+          "alt": "2026 Été Tee Yellow, full look",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/ete-2026-tee-yellow-3.jpg",
+          "alt": "2026 Été Tee Yellow, full look",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/ete-2026-tee-yellow-4.jpg",
+          "alt": "2026 Été Tee Yellow, full look",
+          "width": 1200,
+          "height": 1500
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TEE-ETE-YLW-S",
+          "label": "S",
+          "stock": 6
+        },
+        {
+          "sku": "TEE-ETE-YLW-M",
+          "label": "M",
+          "stock": 10
+        },
+        {
+          "sku": "TEE-ETE-YLW-L",
+          "label": "L",
+          "stock": 10
+        },
+        {
+          "sku": "TEE-ETE-YLW-XL",
+          "label": "XL",
+          "stock": 4
+        }
+      ]
+    },
+    {
+      "id": "demo-ete-2026-tee-navy",
+      "slug": "ete-2026-tee-navy",
+      "name": "2026 Été Tee Navy",
+      "price": 325000,
+      "description": "Navy tee, \"2026 été CASA des BLANÇA\" print on the chest. Limited run, no restock guaranteed.",
+      "dropAt": null,
+      "images": [
+        {
+          "url": "/demo/ete-2026-tee-navy-1.jpg",
+          "alt": "2026 Été Tee Navy, front",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/ete-2026-tee-navy-2.jpg",
+          "alt": "2026 Été Tee Navy, full look",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/ete-2026-tee-navy-3.jpg",
+          "alt": "2026 Été Tee Navy, close-up",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/ete-2026-tee-navy-4.jpg",
+          "alt": "2026 Été Tee Navy, full look",
+          "width": 1200,
+          "height": 1500
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TEE-ETE-NVY-S",
+          "label": "S",
+          "stock": 5
+        },
+        {
+          "sku": "TEE-ETE-NVY-M",
+          "label": "M",
+          "stock": 10
+        },
+        {
+          "sku": "TEE-ETE-NVY-L",
+          "label": "L",
+          "stock": 10
+        },
+        {
+          "sku": "TEE-ETE-NVY-XL",
+          "label": "XL",
+          "stock": 5
+        }
+      ]
+    },
+    {
+      "id": "demo-ete-2026-tee-white",
+      "slug": "ete-2026-tee-white",
+      "name": "2026 Été Tee White",
+      "price": 325000,
+      "description": "White tee, \"2026 été CASA des BLANÇA\" print on the chest. Almost gone: shows the \"Last N\" badge and a sold-out size.",
+      "dropAt": null,
+      "images": [
+        {
+          "url": "/demo/ete-2026-tee-white-1.jpg",
+          "alt": "2026 Été Tee White, close-up",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/ete-2026-tee-white-2.jpg",
+          "alt": "2026 Été Tee White, close-up",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/ete-2026-tee-white-3.jpg",
+          "alt": "2026 Été Tee White, full look",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/ete-2026-tee-white-4.jpg",
+          "alt": "2026 Été Tee White, layered over a stripe longsleeve",
+          "width": 1200,
+          "height": 1500
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TEE-ETE-WHT-S",
+          "label": "S",
+          "stock": 1
+        },
+        {
+          "sku": "TEE-ETE-WHT-M",
+          "label": "M",
+          "stock": 2
+        },
+        {
+          "sku": "TEE-ETE-WHT-L",
+          "label": "L",
+          "stock": 1
+        },
+        {
+          "sku": "TEE-ETE-WHT-XL",
+          "label": "XL",
+          "stock": 0
+        }
+      ]
+    },
+    {
+      "id": "demo-jadore-ksblnk-stripe-longsleeve",
+      "slug": "jadore-ksblnk-stripe-longsleeve",
+      "name": "J'adore KSBLNK Stripe Longsleeve",
+      "price": 425000,
+      "description": "Black and white stripe longsleeve with the yellow \"J'ADORE KSBLNK\" print. Limited run, no restock guaranteed.",
+      "dropAt": null,
+      "images": [
+        {
+          "url": "/demo/jadore-ksblnk-stripe-longsleeve-1.jpg",
+          "alt": "J'adore KSBLNK Stripe Longsleeve, front",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/jadore-ksblnk-stripe-longsleeve-2.jpg",
+          "alt": "J'adore KSBLNK Stripe Longsleeve, close-up",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/jadore-ksblnk-stripe-longsleeve-3.jpg",
+          "alt": "J'adore KSBLNK Stripe Longsleeve, full look",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/jadore-ksblnk-stripe-longsleeve-4.jpg",
+          "alt": "J'adore KSBLNK Stripe Longsleeve, full look",
+          "width": 1200,
+          "height": 1500
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LS-JDR-STR-S",
+          "label": "S",
+          "stock": 3
+        },
+        {
+          "sku": "LS-JDR-STR-M",
+          "label": "M",
+          "stock": 6
+        },
+        {
+          "sku": "LS-JDR-STR-L",
+          "label": "L",
+          "stock": 6
+        },
+        {
+          "sku": "LS-JDR-STR-XL",
+          "label": "XL",
+          "stock": 2
+        }
+      ]
+    },
+    {
+      "id": "demo-casa-des-blanca-tank-white",
+      "slug": "casa-des-blanca-tank-white",
+      "name": "Casa des Blança Tank White",
+      "price": 275000,
+      "description": "White rib tank, vertical \"CASA des BLANÇA\" print. Already sold out: shows how a gone product looks.",
+      "dropAt": null,
+      "images": [
+        {
+          "url": "/demo/casa-des-blanca-tank-white-1.jpg",
+          "alt": "Casa des Blança Tank White, front",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/casa-des-blanca-tank-white-2.jpg",
+          "alt": "Casa des Blança Tank White, close-up",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/casa-des-blanca-tank-white-3.jpg",
+          "alt": "Casa des Blança Tank White, close-up",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/casa-des-blanca-tank-white-4.jpg",
+          "alt": "Casa des Blança Tank White, full look",
+          "width": 1200,
+          "height": 1500
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TANK-CDB-WHT-S",
+          "label": "S",
+          "stock": 0
+        },
+        {
+          "sku": "TANK-CDB-WHT-M",
+          "label": "M",
+          "stock": 0
+        },
+        {
+          "sku": "TANK-CDB-WHT-L",
+          "label": "L",
+          "stock": 0
+        },
+        {
+          "sku": "TANK-CDB-WHT-XL",
+          "label": "XL",
+          "stock": 0
+        }
+      ]
+    },
+    {
+      "id": "demo-casa-des-blanca-sweatshorts-grey",
+      "slug": "casa-des-blanca-sweatshorts-grey",
+      "name": "Casa des Blança Sweatshorts Grey",
+      "price": 475000,
+      "description": "Heather grey fleece sweatshorts, drawstring waist, \"CASA des BLANÇA\" print. Limited run, no restock guaranteed.",
+      "dropAt": null,
+      "images": [
+        {
+          "url": "/demo/casa-des-blanca-sweatshorts-grey-1.jpg",
+          "alt": "Casa des Blança Sweatshorts Grey, front",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/casa-des-blanca-sweatshorts-grey-2.jpg",
+          "alt": "Casa des Blança Sweatshorts Grey, full look",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/casa-des-blanca-sweatshorts-grey-3.jpg",
+          "alt": "Casa des Blança Sweatshorts Grey, full look",
+          "width": 1200,
+          "height": 1500
+        },
+        {
+          "url": "/demo/casa-des-blanca-sweatshorts-grey-4.jpg",
+          "alt": "Casa des Blança Sweatshorts Grey, close-up",
+          "width": 1200,
+          "height": 1500
+        }
+      ],
+      "variants": [
+        {
+          "sku": "SHORT-CDB-GRY-S",
+          "label": "S",
+          "stock": 3
+        },
+        {
+          "sku": "SHORT-CDB-GRY-M",
+          "label": "M",
+          "stock": 6
+        },
+        {
+          "sku": "SHORT-CDB-GRY-L",
+          "label": "L",
+          "stock": 6
+        },
+        {
+          "sku": "SHORT-CDB-GRY-XL",
+          "label": "XL",
+          "stock": 2
+        }
+      ]
+    }
+  ]
+}

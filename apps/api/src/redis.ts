@@ -1,5 +1,7 @@
+import { DEMO_SYNC } from '@kskblnk/types/demo'
 import { Redis } from 'ioredis'
-import { config } from './config'
+import RedisMock from 'ioredis-mock'
+import { config, DEMO } from './config'
 
 /**
  * Every key shares the `{shop}` hash tag so the multi-key Lua scripts below
@@ -108,15 +110,57 @@ export interface ShopRedis extends Redis {
   markPending(...args: (string | number)[]): Promise<string>
 }
 
+/**
+ * Demo mode (see DEMO in config.ts): the inventory as /internal/sync would have written it
+ * from packages/types/src/demo-catalog.json, preloaded into an in-memory Redis.
+ */
+function demoData() {
+  // Hash fields as strings, exactly what real Redis would hand back.
+  const data: Record<string, Record<string, string> | Set<string>> = {}
+  const skus = new Set<string>()
+  for (const p of DEMO_SYNC.products) {
+    for (const v of p.variants) {
+      data[keys.sku(v.sku)] = {
+        total: String(v.stock),
+        held: '0',
+        sold: '0',
+        label: v.label,
+        productId: p.id,
+        name: p.name,
+        slug: p.slug,
+        price: String(p.price),
+        image: p.image ?? '',
+        dropAt: p.dropAt ? String(Date.parse(p.dropAt)) : '',
+        active: '1',
+      }
+      skus.add(v.sku)
+    }
+    data[keys.productSkus(p.id)] = new Set(p.variants.map((v) => v.sku))
+  }
+  data[keys.skus] = skus
+  return data
+}
+
+const SCRIPTS = { reserve: RESERVE, release: RELEASE, confirm: CONFIRM, markPending: MARK_PENDING }
+
+/** In-memory Redis for demo mode, running the same Lua scripts. */
+function createDemo(): ShopRedis {
+  const r = new RedisMock({ data: demoData() }) as unknown as ShopRedis
+  // ioredis-mock's defineCommand ignores a numKeys first argument (it treats every arg as a
+  // KEY), so call the scripts through EVAL, which takes numKeys exactly like real Redis.
+  for (const [name, lua] of Object.entries(SCRIPTS)) {
+    Object.assign(r, { [name]: (...args: (string | number)[]) => r.eval(lua, ...(args as [number, ...string[]])) })
+  }
+  return r
+}
+
 function create(): ShopRedis {
+  if (DEMO) return createDemo()
   const r = new Redis(config.REDIS_URL, {
     maxRetriesPerRequest: 2,
     enableAutoPipelining: true, // batches concurrent commands: big win under spikes
   }) as ShopRedis
-  r.defineCommand('reserve', { lua: RESERVE })
-  r.defineCommand('release', { lua: RELEASE })
-  r.defineCommand('confirm', { lua: CONFIRM })
-  r.defineCommand('markPending', { lua: MARK_PENDING })
+  for (const [name, lua] of Object.entries(SCRIPTS)) r.defineCommand(name, { lua })
   r.on('error', (e) => console.error('[redis]', e.message))
   return r
 }

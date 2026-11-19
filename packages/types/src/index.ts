@@ -48,6 +48,8 @@ export interface StockResponse {
   at: number
   /** Flat shipping fee in rupiah added to every order (0 = free shipping). */
   shippingFee: number
+  /** True when the API runs in demo mode: in-memory stock, no real payment. */
+  demo?: boolean
 }
 
 /* ------------------------------------------------------------- shipping */
