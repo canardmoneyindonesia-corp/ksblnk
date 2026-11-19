@@ -5,8 +5,9 @@ import { revalidatePath, revalidateTag } from 'next/cache'
  * every page built from it; the next visitor gets freshly generated HTML which
  * the CDN then serves to everyone else.
  *
- * On Vercel this route is not public: /api/* on the domain goes to the api service.
- * The CMS reaches it over its WEB_URL service binding. The secret check stays as defence in depth.
+ * On Vercel this is public at /api/revalidate (vercel.json routes it here ahead of the
+ * api service's /api/*), so the secret check is what protects it. The CMS calls it over
+ * the public URL: a cms -> web binding would be circular (web already binds to cms).
  */
 export async function POST(req: Request) {
   const secret = process.env.REVALIDATE_SECRET

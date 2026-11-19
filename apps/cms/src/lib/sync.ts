@@ -12,12 +12,33 @@ const WEB_SECRET = process.env.WEB_REVALIDATE_SECRET ?? ''
 const PUBLIC_URL = (process.env.CMS_PUBLIC_URL || (process.env.VERCEL ? '' : 'http://localhost:3001')).replace(/\/$/, '')
 
 /*
- * Base URLs of the other services. On Vercel these are service bindings (API_URL -> api,
- * WEB_URL -> web, declared on the cms service in vercel.json): Vercel injects them at
- * runtime only, so read them per call. Locally they come from .env.
+ * API_URL: on Vercel the `api` service binding (vercel.json), injected at runtime only,
+ * so read it per call. Locally it comes from .env.
  */
 export const apiUrl = (path: string) => new URL(path, process.env.API_URL ?? 'http://localhost:4000')
-const webUrl = (path: string) => new URL(path, process.env.WEB_URL ?? 'http://localhost:3000')
+
+/** Public origin of this deployment on Vercel (production domain, else the preview URL). */
+function vercelOrigin() {
+  const host =
+    process.env.VERCEL_ENV === 'production' && process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? process.env.VERCEL_PROJECT_PRODUCTION_URL
+      : (process.env.VERCEL_BRANCH_URL ?? process.env.VERCEL_URL)
+  return host ? `https://${host}` : undefined
+}
+
+/*
+ * The storefront is NOT a binding: web already binds to cms (to read products) and Vercel
+ * rejects circular bindings. Revalidation goes over the public URL instead
+ * (/api/revalidate is routed to web in vercel.json and checks the shared secret).
+ */
+const webUrl = (path: string) =>
+  new URL(path, process.env.WEB_URL ?? vercelOrigin() ?? 'http://localhost:3000')
+
+/** Lets the call through Vercel Deployment Protection on previews ("Protection Bypass for Automation"). */
+function bypassHeaders(): Record<string, string> {
+  const s = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+  return s ? { 'x-vercel-protection-bypass': s } : {}
+}
 
 type Doc = Record<string, any>
 
@@ -66,7 +87,7 @@ export async function revalidateWeb(log: Payload['logger']) {
   try {
     const res = await fetch(webUrl('api/revalidate'), {
       method: 'POST',
-      headers: { 'x-revalidate-secret': WEB_SECRET },
+      headers: { 'x-revalidate-secret': WEB_SECRET, ...bypassHeaders() },
       signal: AbortSignal.timeout(8000),
     })
     if (!res.ok) throw new Error(String(res.status))

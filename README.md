@@ -54,9 +54,10 @@ pnpm drop:sim          # oversell / load test (args: units buyers concurrency)
 |---|---|---|
 | `/api/*` | `api` (Hono, `apps/api/src/index.ts`) | Every API route lives under `/api` (also locally: `localhost:4000/api/...`). |
 | `/cms/*` | `cms` (Payload / Next, `basePath: '/cms'`) | Admin at `/cms/admin`, REST at `/cms/api`. |
-| everything else | `web` (Next storefront) | Its `/api/revalidate` is not public; the CMS calls it over a binding. |
+| `/api/revalidate` | `web` | Matched before `/api/*`. Secret-protected; the CMS calls it over the public URL. |
+| everything else | `web` (Next storefront) | |
 
-Service bindings (Vercel injects these at runtime; don't set them yourself): `cms` gets `API_URL` and `WEB_URL`, `web` gets `CMS_URL`. They don't exist during builds, so the storefront build pre-renders from `CMS_BUILD_URL` if you set it (your public domain), otherwise it builds empty pages that ISR fills in. Leave `NEXT_PUBLIC_API_URL` unset on Vercel (defaults to `/api`).
+Service bindings (Vercel injects these at runtime; don't set them yourself): `cms` gets `API_URL`, `web` gets `CMS_URL`. There is no `cms -> web` binding because Vercel rejects circular bindings; the CMS reaches the storefront's revalidate route on the public URL (`WEB_URL` if set, else the deployment's own URL; on protected previews enable "Protection Bypass for Automation"). They don't exist during builds, so the storefront build pre-renders from `CMS_BUILD_URL` if you set it (your public domain), otherwise it builds empty pages that ISR fills in. Leave `NEXT_PUBLIC_API_URL` unset on Vercel (defaults to `/api`).
 
 There is no long-running process on Vercel, so the timers that run locally don't run there: the API sweeper (`POST /api/internal/sweep`, bearer `INTERNAL_SECRET`) and the CMS order import must be triggered by a scheduler. Run `vercel dev` to try all three services together locally.
 
