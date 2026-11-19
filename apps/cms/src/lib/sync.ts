@@ -7,11 +7,17 @@ import type { Payload } from 'payload'
  * store keeps selling.
  */
 
-const API_URL = process.env.API_URL ?? 'http://localhost:4000'
 const API_SECRET = process.env.API_INTERNAL_SECRET ?? ''
-const WEB_URL = process.env.WEB_URL ?? 'http://localhost:3000'
 const WEB_SECRET = process.env.WEB_REVALIDATE_SECRET ?? ''
-const PUBLIC_URL = (process.env.CMS_PUBLIC_URL ?? 'http://localhost:3001').replace(/\/$/, '')
+const PUBLIC_URL = (process.env.CMS_PUBLIC_URL || (process.env.VERCEL ? '' : 'http://localhost:3001')).replace(/\/$/, '')
+
+/*
+ * Base URLs of the other services. On Vercel these are service bindings (API_URL -> api,
+ * WEB_URL -> web, declared on the cms service in vercel.json): Vercel injects them at
+ * runtime only, so read them per call. Locally they come from .env.
+ */
+export const apiUrl = (path: string) => new URL(path, process.env.API_URL ?? 'http://localhost:4000')
+const webUrl = (path: string) => new URL(path, process.env.WEB_URL ?? 'http://localhost:3000')
 
 type Doc = Record<string, any>
 
@@ -41,7 +47,7 @@ export function toSyncProduct(doc: Doc): SyncProduct {
 
 export async function pushToApi(body: SyncRequest, log: Payload['logger']) {
   try {
-    const res = await fetch(`${API_URL}/internal/sync`, {
+    const res = await fetch(apiUrl('api/internal/sync'), {
       method: 'POST',
       headers: { authorization: `Bearer ${API_SECRET}`, 'content-type': 'application/json' },
       body: JSON.stringify(body),
@@ -58,7 +64,7 @@ export async function pushToApi(body: SyncRequest, log: Payload['logger']) {
 
 export async function revalidateWeb(log: Payload['logger']) {
   try {
-    const res = await fetch(`${WEB_URL}/api/revalidate`, {
+    const res = await fetch(webUrl('api/revalidate'), {
       method: 'POST',
       headers: { 'x-revalidate-secret': WEB_SECRET },
       signal: AbortSignal.timeout(8000),

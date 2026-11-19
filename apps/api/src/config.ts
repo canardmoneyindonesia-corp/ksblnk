@@ -6,17 +6,38 @@ try {
   // no .env file: rely on the real environment (production)
 }
 
+/**
+ * Every API route lives under this prefix. On Vercel the top-level rewrite
+ * `/api/(.*)` sends requests here with the path unchanged, so the app must
+ * serve /api/stock, /api/checkout, ... (locally: http://localhost:4000/api/...).
+ */
+export const API_BASE_PATH = '/api'
+
+const onVercel = Boolean(process.env.VERCEL)
+
+/** Public storefront origin on Vercel: same domain as the API (production domain, else this deployment). */
+function vercelOrigin() {
+  const host =
+    process.env.VERCEL_ENV === 'production' && process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? process.env.VERCEL_PROJECT_PRODUCTION_URL
+      : (process.env.VERCEL_BRANCH_URL ?? process.env.VERCEL_URL)
+  return host ? `https://${host}` : undefined
+}
+
 const schema = z.object({
   PORT: z.coerce.number().default(4000),
   REDIS_URL: z.string().default('redis://localhost:6380'),
-  WEB_ORIGIN: z.string().default('http://localhost:3000'),
+  WEB_ORIGIN: z.string().default(vercelOrigin() ?? 'http://localhost:3000'),
   INTERNAL_SECRET: z.string().min(8),
 
   PAYMENTS_MODE: z.enum(['mock', 'doku']).default('mock'),
   DOKU_ENV: z.enum(['sandbox', 'production']).default('sandbox'),
   DOKU_CLIENT_ID: z.string().default(''),
   DOKU_SECRET_KEY: z.string().default(''),
-  /** Path part of the Notification URL set in the DOKU back office (it is part of the signature). */
+  /**
+   * Notification route, relative to API_BASE_PATH. The Notification URL in the DOKU back office
+   * is https://<domain>/api/webhooks/doku, and API_BASE_PATH + this path is part of the signature.
+   */
   DOKU_NOTIFY_PATH: z.string().default('/webhooks/doku'),
   /** Optional comma-separated list, e.g. "QRIS,EMONEY_SHOPEE_PAY,VIRTUAL_ACCOUNT_BCA". Empty = all enabled. */
   DOKU_PAYMENT_METHODS: z.string().default(''),
@@ -31,9 +52,10 @@ const schema = z.object({
   PAYMENT_MAX_WAIT_MINUTES: z.coerce.number().int().min(10).max(24 * 60).default(30),
 
   RATE_LIMIT_PER_MIN: z.coerce.number().min(1).default(10),
+  /** Defaults to on when running on Vercel, which always sits in front of the function. */
   TRUST_PROXY: z
     .string()
-    .default('0')
+    .default(onVercel ? '1' : '0')
     .transform((v) => v === '1' || v === 'true'),
 })
 

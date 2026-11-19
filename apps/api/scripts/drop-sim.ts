@@ -19,7 +19,7 @@ const [units = 50, buyers = 5000, concurrency = 100] = process.argv.slice(2).map
 const { serve } = await import('@hono/node-server')
 const { app } = await import('../src/app')
 const { redis, keys } = await import('../src/redis')
-const { config } = await import('../src/config')
+const { config, API_BASE_PATH } = await import('../src/config')
 
 const BUYER = {
   name: 'Drop Sim',
@@ -36,7 +36,7 @@ const PRODUCT = `sim-${Date.now()}`
 const server = serve({ fetch: app.fetch, port: 0, hostname: '127.0.0.1' })
 await new Promise((r) => server.once('listening', r))
 const port = (server.address() as { port: number }).port
-const base = `http://127.0.0.1:${port}`
+const base = `http://127.0.0.1:${port}${API_BASE_PATH}`
 
 await fetch(`${base}/internal/sync`, {
   method: 'POST',

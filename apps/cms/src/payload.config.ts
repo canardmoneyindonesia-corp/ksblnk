@@ -10,14 +10,21 @@ import { Orders } from './collections/Orders'
 import { Products } from './collections/Products'
 import { Users } from './collections/Users'
 import { OrderSync } from './globals/OrderSync'
+import { CMS_BASE_PATH } from './lib/base-path'
 import { startOrderImport } from './lib/orders'
 import { pushAll } from './lib/sync'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// withPayload sets this from next.config's basePath at build time; set it here too so
+// server code that reads it at runtime (media URLs, admin links) always includes /cms.
+process.env.NEXT_BASE_PATH ||= CMS_BASE_PATH
+
 export default buildConfig({
-  serverURL: process.env.CMS_PUBLIC_URL || 'http://localhost:3001',
+  // Unset on Vercel: media URLs stay relative (/cms/api/media/file/...), which works because
+  // the storefront and the CMS share one domain. Set CMS_PUBLIC_URL to force absolute URLs.
+  serverURL: process.env.CMS_PUBLIC_URL || (process.env.VERCEL ? '' : 'http://localhost:3001'),
   admin: {
     user: Users.slug,
     meta: { titleSuffix: ' · KSKBLNK CMS' },

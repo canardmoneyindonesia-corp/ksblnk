@@ -1,5 +1,6 @@
 import type { InternalOrder, OrderFeedResponse } from '@kskblnk/types'
 import type { Payload } from 'payload'
+import { apiUrl } from './sync'
 
 /*
  * Order import: the CMS PULLS paid orders from the API (never the other way round),
@@ -8,7 +9,6 @@ import type { Payload } from 'payload'
  * is down during a drop it simply catches up on the next run.
  */
 
-const API_URL = process.env.API_URL ?? 'http://localhost:4000'
 const API_SECRET = process.env.API_INTERNAL_SECRET ?? ''
 const PAGE = 500
 
@@ -46,7 +46,7 @@ export function toOrderDoc(o: InternalOrder) {
 }
 
 async function fetchFeed(cursor: number): Promise<OrderFeedResponse> {
-  const res = await fetch(`${API_URL}/internal/orders/feed?cursor=${cursor}&limit=${PAGE}`, {
+  const res = await fetch(apiUrl(`api/internal/orders/feed?cursor=${cursor}&limit=${PAGE}`), {
     headers: { authorization: `Bearer ${API_SECRET}` },
     signal: AbortSignal.timeout(15_000),
   })

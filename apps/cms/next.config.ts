@@ -7,6 +7,12 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
+  // Everything (admin, REST API, media, /_next assets) is served under /cms so the CMS
+  // can share one domain with the storefront: the top-level Vercel rewrite `/cms/(.*)`
+  // routes here without colliding with the storefront's `/` or the API's `/api`.
+  // Payload picks this up (NEXT_BASE_PATH): admin = /cms/admin, REST = /cms/api.
+  // Keep in sync with CMS_BASE_PATH in src/lib/base-path.ts.
+  basePath: '/cms',
   images: {
     localPatterns: [
       {

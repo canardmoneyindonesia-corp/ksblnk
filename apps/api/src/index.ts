@@ -1,21 +1,9 @@
-import { serve } from '@hono/node-server'
+/*
+ * Vercel entrypoint (services mode, framework "hono"): the default export is the app.
+ * Vercel runs it as a Function, so there is no long-running process here: the
+ * sweeper is triggered through /api/internal/sweep instead of a timer.
+ * Local `pnpm dev` / `pnpm start` use src/node.ts (Node server + sweeper timer).
+ */
 import { app } from './app'
-import { config } from './config'
-import { redis } from './redis'
-import { startSweeper } from './sweeper'
 
-const stopSweeper = startSweeper()
-
-const server = serve({ fetch: app.fetch, port: config.PORT }, (info) => {
-  console.log(`[api] listening on :${info.port} (payments: ${config.PAYMENTS_MODE}${config.PAYMENTS_MODE === 'doku' ? ` ${config.DOKU_ENV}` : ''}, hold: ${config.HOLD_MINUTES}min, shipping: Rp ${config.SHIPPING_FEE})`)
-})
-
-function shutdown() {
-  stopSweeper()
-  server.close(() => {
-    redis.quit().finally(() => process.exit(0))
-  })
-  setTimeout(() => process.exit(1), 10_000).unref()
-}
-process.on('SIGINT', shutdown)
-process.on('SIGTERM', shutdown)
+export default app

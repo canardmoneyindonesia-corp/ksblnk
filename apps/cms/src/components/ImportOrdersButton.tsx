@@ -3,6 +3,7 @@
 import { Button, toast } from '@payloadcms/ui'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { CMS_BASE_PATH } from '../lib/base-path'
 
 /** "Import now" above the Orders list: pulls new paid orders from the API without waiting for the timer. */
 export function ImportOrdersButton() {
@@ -12,7 +13,7 @@ export function ImportOrdersButton() {
   async function run() {
     setBusy(true)
     try {
-      const res = await fetch('/api/orders/import', { method: 'POST', credentials: 'include' })
+      const res = await fetch(`${CMS_BASE_PATH}/api/orders/import`, { method: 'POST', credentials: 'include' })
       const body = (await res.json()) as { ok: boolean; created?: number; error?: string }
       if (!body.ok) throw new Error(body.error ?? `HTTP ${res.status}`)
       toast.success(body.created ? `Imported ${body.created} new order(s)` : 'No new orders')

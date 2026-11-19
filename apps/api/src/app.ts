@@ -13,7 +13,8 @@ import { Hono, type Context } from 'hono'
 import { bearerAuth } from 'hono/bearer-auth'
 import { bodyLimit } from 'hono/body-limit'
 import { cors } from 'hono/cors'
-import { config } from './config'
+import { HTTPException } from 'hono/http-exception'
+import { API_BASE_PATH, config } from './config'
 import { createPayment, verifyNotification, type DokuNotification } from './doku'
 import {
   attachPayment,
@@ -26,8 +27,10 @@ import {
   syncCatalog,
 } from './inventory'
 import { keys, redis } from './redis'
+import { sweep } from './sweeper'
 
-export const app = new Hono()
+/** All routes below are served under /api (see API_BASE_PATH). */
+export const app = new Hono().basePath(API_BASE_PATH)
 
 app.use('/stock', cors({ origin: config.WEB_ORIGIN, allowMethods: ['GET'] }))
 app.use('/checkout', cors({ origin: config.WEB_ORIGIN, allowMethods: ['POST'] }))
@@ -53,12 +56,17 @@ app.get('/stock', async (c) => {
 function clientIp(c: Context) {
   if (config.TRUST_PROXY) {
     const h =
-      c.req.header('cf-connecting-ip') ??
+      // On Vercel only Vercel's own headers are trustworthy: a client could send cf-connecting-ip itself.
+      (process.env.VERCEL ? undefined : c.req.header('cf-connecting-ip')) ??
       c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ??
       c.req.header('x-real-ip')
     if (h) return h
   }
-  return getConnInfo(c).remote.address ?? 'unknown'
+  try {
+    return getConnInfo(c).remote.address ?? 'unknown'
+  } catch {
+    return 'unknown' // not running on @hono/node-server
+  }
 }
 
 async function rateLimited(ip: string) {
@@ -192,6 +200,17 @@ internal.post('/sync', async (c) => {
   return c.json({ ok: true, products: parsed.data.products.length })
 })
 
+/**
+ * Runs one sweeper pass (expired holds -> DOKU status check -> release/confirm).
+ * Locally the Node server runs it on a timer; on Vercel there is no long-running
+ * process, so a scheduler must call this every ~10-60 s. The Redis lock in sweep()
+ * keeps overlapping calls safe.
+ */
+internal.post('/sweep', async (c) => {
+  await sweep()
+  return c.json({ ok: true })
+})
+
 /** Live drop monitor: total / held / sold per SKU. */
 internal.get('/inventory', async (c) => {
   const skus = await redis.smembers(keys.skus)
@@ -270,6 +289,7 @@ internal.get('/orders/feed', async (c) => {
 app.route('/internal', internal)
 
 app.onError((e, c) => {
+  if (e instanceof HTTPException) return e.getResponse() // e.g. 401 from bearerAuth
   console.error('[api]', e)
   return c.json({ ok: false, code: 'INVALID', message: 'Server error' }, 500)
 })

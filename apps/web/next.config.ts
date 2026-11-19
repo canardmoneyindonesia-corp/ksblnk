@@ -1,7 +1,10 @@
 import type { NextConfig } from 'next'
 
+// Local dev: photos come from the CMS on another port (absolute URLs, remotePatterns below).
+// On Vercel they are relative (/cms/api/media/file/...) on the same domain, which next/image
+// allows by default, and the CMS_URL binding is not available while this file is evaluated.
 const cms = new URL(process.env.CMS_URL ?? 'http://localhost:3001')
-const cmsIsLocal = ['localhost', '127.0.0.1'].includes(cms.hostname)
+const cmsIsLocal = !process.env.VERCEL && ['localhost', '127.0.0.1'].includes(cms.hostname)
 
 const nextConfig: NextConfig = {
   // Workspace packages ship TypeScript source.

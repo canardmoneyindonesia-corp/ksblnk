@@ -19,21 +19,20 @@ interface CmsProduct {
   variants?: { sku: string; label: string }[] | null
 }
 
-function absolute(base: string, url: string) {
-  return url.startsWith('http') ? url : `${base}${url}`
-}
-
-function mapImage(base: string, m: CmsMedia | string | number): ProductImage | null {
+function mapImage(m: CmsMedia | string | number): ProductImage | null {
   if (typeof m !== 'object' || !m?.url) return null
   return {
-    url: absolute(base, m.url),
+    // Absolute when the CMS has a public serverURL (local dev: http://localhost:3001/cms/...).
+    // Relative (/cms/api/media/file/...) when the CMS and storefront share one domain:
+    // never prefix it with the CMS fetch base, which may be an internal service URL.
+    url: m.url,
     alt: m.alt ?? '',
     width: m.width ?? 1200,
     height: m.height ?? 1500,
   }
 }
 
-export function mapCmsProduct(base: string, doc: CmsProduct): Product {
+export function mapCmsProduct(doc: CmsProduct): Product {
   return {
     id: String(doc.id),
     slug: doc.slug,
@@ -42,7 +41,7 @@ export function mapCmsProduct(base: string, doc: CmsProduct): Product {
     price: Math.round(doc.price),
     dropAt: doc.dropAt ?? null,
     images: (doc.images ?? [])
-      .map((m) => mapImage(base, m))
+      .map(mapImage)
       .filter((m): m is ProductImage => m !== null),
     variants: (doc.variants ?? []).map((v) => ({ sku: v.sku, label: v.label })),
   }
@@ -52,15 +51,17 @@ export function mapCmsProduct(base: string, doc: CmsProduct): Product {
  * Fetches all published products from Payload. Throws on failure on purpose:
  * with ISR a failed regeneration keeps serving the last good page instead of
  * publishing an empty store.
+ *
+ * `cmsApiUrl` is the Payload REST root, e.g. http://localhost:3001/cms/api.
  */
 export async function fetchProducts(
-  cmsUrl: string,
+  cmsApiUrl: string | URL,
   init?: RequestInit & { next?: { revalidate?: number | false; tags?: string[] } },
 ): Promise<Product[]> {
-  const base = cmsUrl.replace(/\/$/, '')
+  const base = String(cmsApiUrl).replace(/\/$/, '')
   const qs = new URLSearchParams({ depth: '1', limit: '200', sort: 'sortOrder' })
-  const res = await fetch(`${base}/api/products?${qs}`, init)
+  const res = await fetch(`${base}/products?${qs}`, init)
   if (!res.ok) throw new Error(`CMS responded ${res.status}`)
   const json = (await res.json()) as { docs: CmsProduct[] }
-  return json.docs.map((d) => mapCmsProduct(base, d))
+  return json.docs.map(mapCmsProduct)
 }

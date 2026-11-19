@@ -1,6 +1,6 @@
 import { createHash, createHmac, randomUUID, timingSafeEqual } from 'node:crypto'
 import type { Shipping } from '@kskblnk/types'
-import { config } from './config'
+import { API_BASE_PATH, config } from './config'
 import type { CatalogEntry } from './inventory'
 
 /*
@@ -140,7 +140,8 @@ export function verifyNotification(headers: (name: string) => string | undefined
   const timestamp = headers('request-timestamp') ?? ''
   const got = headers('signature') ?? ''
   if (clientId !== config.DOKU_CLIENT_ID || !requestId || !got) return null
-  const expected = sign({ clientId, requestId, timestamp, target: config.DOKU_NOTIFY_PATH, body: rawBody })
+  const target = `${API_BASE_PATH}${config.DOKU_NOTIFY_PATH}`
+  const expected = sign({ clientId, requestId, timestamp, target, body: rawBody })
   const a = Buffer.from(got)
   const b = Buffer.from(expected)
   if (a.length !== b.length || !timingSafeEqual(a, b)) return null
