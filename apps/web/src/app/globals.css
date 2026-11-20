@@ -10,7 +10,7 @@
   --danger: #d6331c;
   --gutter: 12px;
   --bar-h: 64px;
-  /* Checkout CTA row under the collapsed bag pill: 55px CTA + 8px gap. */
+  /* Collapsed bag row (basket + checkout CTA): 55px CTA + 8px gap. */
   --bag-cta: 63px;
   /* Gap between the floating bag pill and the screen edges. */
   --float: 12px;
@@ -67,7 +67,7 @@ h1 {
 }
 
 main {
-  padding-bottom: calc(var(--bar-h) + var(--bag-cta) + var(--float) + var(--safe-bottom) + 24px);
+  padding-bottom: calc(var(--bag-cta) + var(--float) + var(--safe-bottom) + 24px);
 }
 
 /* ---------- header ---------- */
@@ -481,18 +481,6 @@ main {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
-}
-
-.btn--primary {
-  background: var(--ink);
-  color: var(--bg);
-}
-
-.btn--primary:disabled {
-  background: var(--line);
-  border-color: var(--line);
-  color: var(--muted);
-  cursor: not-allowed;
 }
 
 .btn--ghost {
@@ -1475,14 +1463,10 @@ main {
   border-top: 1px solid var(--line);
 }
 
-.quick__done {
-  width: 100%;
-  min-height: 36px;
-  border: 0;
-  background: var(--ink);
-  color: var(--bg);
-  font-size: 13px;
-  font-weight: 800;
+/* Done is a BASBOI CTA (.btn--cta), compact to fit the 220px menu. */
+.quick__menu-foot .btn.btn--cta {
+  --cta-h: 40px;
+  font-size: 12px;
 }
 
 @keyframes drop {
@@ -1591,9 +1575,9 @@ main {
     padding: 10px var(--gutter) 0;
   }
 
-  .quick__done {
-    min-height: 48px;
-    font-size: 15px;
+  .quick__menu-foot .btn.btn--cta {
+    --cta-h: 55px;
+    font-size: 16px;
   }
 }
 
@@ -1634,11 +1618,7 @@ main {
   }
 }
 
-/* Collapsed, the pill floats above the checkout CTA row (.bag-cta). */
-.sheet:not(.sheet--open) {
-  bottom: calc(var(--float) + var(--safe-bottom) + var(--bag-cta));
-}
-
+/* Collapsed bag: just this row (round basket + checkout CTA); the sheet only exists open. */
 .bag-cta {
   position: fixed;
   left: var(--float);
@@ -1829,8 +1809,24 @@ main {
   transition: transform 0.15s ease-out;
 }
 
-.btn.btn--cta:active {
+.btn.btn--cta:active:not(:disabled) {
   transform: scale(0.97);
+}
+
+/* Disabled (sold out, not live yet, paying): same shape, greyed, no shadow. */
+.btn.btn--cta:disabled {
+  color: var(--muted);
+  filter: none;
+  cursor: not-allowed;
+}
+
+.btn--cta:disabled .cta-shape {
+  color: var(--line);
+}
+
+.btn.btn--cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 .cta-shape {
@@ -1933,10 +1929,6 @@ main {
     width: 420px;
   }
 
-  .sheet:not(.sheet--open) {
-    bottom: calc(16px + var(--bag-cta));
-  }
-
   .bag-cta {
     left: auto;
     right: var(--gutter);
@@ -1946,7 +1938,7 @@ main {
 
   .bagbar-spacer {
     display: block;
-    height: calc(80px + var(--bag-cta));
+    height: calc(var(--bag-cta) + 24px);
   }
 }
 

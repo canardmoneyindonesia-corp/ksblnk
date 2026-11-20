@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api'
 import { cart } from '@/lib/cart'
 import { MoneyRain } from './MoneyRain'
+import { CtaShape } from './CtaShape'
 
 const wib = new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })
 
@@ -66,7 +67,8 @@ export function OrderResult({ orderId, cancelled }: { orderId: string; cancelled
             email when your order ships.
           </p>
           <p className="notice__ref">Order {orderId}</p>
-          <Link href="/" className="btn btn--primary">
+          <Link href="/" className="btn btn--cta">
+            <CtaShape />
             Back to the shop
           </Link>
         </section>
@@ -83,7 +85,8 @@ export function OrderResult({ orderId, cancelled }: { orderId: string; cancelled
             account? This page updates by itself once it arrives.
           </p>
           {order.paymentUrl && (
-            <a href={order.paymentUrl} className="btn btn--primary">
+            <a href={order.paymentUrl} className="btn btn--cta">
+              <CtaShape />
               Continue payment{order.amount ? ` · ${formatPrice(order.amount)}` : ''}
             </a>
           )}
@@ -103,7 +106,8 @@ export function OrderResult({ orderId, cancelled }: { orderId: string; cancelled
             in full; we'll contact you.
           </p>
           <p className="notice__ref">Order {orderId}</p>
-          <Link href="/" className="btn btn--primary">
+          <Link href="/" className="btn btn--cta">
+            <CtaShape />
             Back to the shop
           </Link>
         </section>
@@ -113,7 +117,8 @@ export function OrderResult({ orderId, cancelled }: { orderId: string; cancelled
       return (
         <section className="notice">
           <h1>Order not found.</h1>
-          <Link href="/checkout" className="btn btn--primary">
+          <Link href="/checkout" className="btn btn--cta">
+            <CtaShape />
             Back to bag
           </Link>
         </section>
@@ -125,7 +130,8 @@ export function OrderResult({ orderId, cancelled }: { orderId: string; cancelled
         <section className="notice">
           <h1>Reservation expired.</h1>
           <p>The payment wasn't completed in time, so the items went back on sale. Your bag is still saved.</p>
-          <Link href="/checkout" className="btn btn--primary">
+          <Link href="/checkout" className="btn btn--cta">
+            <CtaShape />
             Try again
           </Link>
         </section>

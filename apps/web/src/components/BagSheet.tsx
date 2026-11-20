@@ -170,6 +170,8 @@ export function BagSheet({ products }: { products: Product[] }) {
 
       {open && <div className="sheet-backdrop" ref={backdropRef} onClick={() => shopUi.setSheet(false)} />}
 
+      {/* Only the open sheet: collapsed, the basket + CTA row below is the whole bag UI. */}
+      {open && (
       <section ref={sheetRef} className={`sheet${open ? ' sheet--open' : ''}`} aria-label="Bag">
         <div className="sheet__grab" {...grab}>
           <span className="sheet__handle" aria-hidden />
@@ -228,8 +230,9 @@ export function BagSheet({ products }: { products: Product[] }) {
           </div>
         )}
       </section>
+      )}
 
-      {/* Collapsed: the full checkout CTA on its own row under the pill, not squeezed into it. */}
+      {/* Collapsed: round basket (opens the bag) + the full checkout CTA. */}
       {!open && (
         <div className="bag-cta">
           <button

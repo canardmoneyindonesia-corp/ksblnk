@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { cart, useCart } from '@/lib/cart'
 import { shopUi, useOpenPicker } from '@/lib/shop-ui'
 import { useCountdown, useStock } from '@/lib/stock'
+import { CtaShape } from './CtaShape'
 
 /** Buttons that arrow keys move between (not the sheet's "×", hidden on desktop). */
 const NAV_BUTTONS = '.quick__opt button:not(:disabled), .quick__done'
@@ -149,7 +150,8 @@ export function QuickAdd({ id, name, variants, dropAt }: { id: string; name: str
             )
           })}
           <li role="presentation" className="quick__menu-foot">
-            <button className="quick__done" onClick={() => shopUi.openPicker(null)}>
+            <button className="btn btn--cta quick__done" onClick={() => shopUi.openPicker(null)}>
+              <CtaShape />
               {inBag > 0 ? `Done · ${inBag} in bag` : 'Done'}
             </button>
           </li>

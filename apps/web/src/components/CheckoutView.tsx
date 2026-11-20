@@ -16,6 +16,7 @@ import { GayaHidupInfo } from './GayaHidupInfo'
 import { InfoTip } from './InfoTip'
 import { OrderResult } from './OrderResult'
 import { ShippingForm, useSavedShipping } from './ShippingForm'
+import { CtaShape } from './CtaShape'
 
 const MESSAGES: Record<CheckoutErrorCode, string> = {
   SOLD_OUT: 'Someone was faster: the items marked below just sold out.',
@@ -116,7 +117,8 @@ function Bag({ products, step }: { products: Product[]; step: 'bag' | 'shipping'
       <section className="notice">
         {unknown.length > 0 && <UnknownCleaner skus={unknown} />}
         <h1>Your bag is empty.</h1>
-        <Link href="/" className="btn btn--primary">
+        <Link href="/" className="btn btn--cta">
+          <CtaShape />
           Shop the drop
         </Link>
       </section>
@@ -200,7 +202,8 @@ function Bag({ products, step }: { products: Product[]; step: 'bag' | 'shipping'
         {error && <p className="alert alert--error">{error.message}</p>}
 
         <div className="cta-bar">
-          <button className="btn btn--primary btn--icon" onClick={pay} disabled={pending || flagged.size > 0}>
+          <button className="btn btn--cta btn--icon" onClick={pay} disabled={pending || flagged.size > 0}>
+            <CtaShape />
             {pending ? (
               'Securing your items…'
             ) : (
@@ -246,7 +249,8 @@ function Bag({ products, step }: { products: Product[]; step: 'bag' | 'shipping'
       {error && <p className="alert alert--error">{error.message}</p>}
 
       <div className="cta-bar">
-        <button className="btn btn--primary btn--icon" onClick={toShipping} disabled={flagged.size > 0}>
+        <button className="btn btn--cta btn--icon" onClick={toShipping} disabled={flagged.size > 0}>
+          <CtaShape />
           Continue to shipping <ArrowIcon />
         </button>
       </div>

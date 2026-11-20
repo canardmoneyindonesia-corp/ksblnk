@@ -8,6 +8,7 @@ import { cart, cartCount, useCart } from '@/lib/cart'
 import { formatCountdown } from '@/lib/format'
 import { useCountdown, useStock } from '@/lib/stock'
 import { useBackClick } from './BackButton'
+import { CtaShape } from './CtaShape'
 
 export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: string | null }) {
   const { stock, ready } = useStock()
@@ -49,26 +50,30 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
   let cta: React.ReactNode
   if (notLive) {
     cta = (
-      <button className="btn btn--primary" disabled>
+      <button className="btn btn--cta" disabled>
+        <CtaShape />
         {left === null ? 'Coming soon' : `Drops in ${formatCountdown(left)}`}
       </button>
     )
   } else if (allOut) {
     cta = (
-      <button className="btn btn--primary" disabled>
+      <button className="btn btn--cta" disabled>
+        <CtaShape />
         Sold out
       </button>
     )
   } else if (selected && isOut(selected) && inBag === 0) {
     cta = (
-      <button className="btn btn--primary" disabled>
+      <button className="btn btn--cta" disabled>
+        <CtaShape />
         Sold out
       </button>
     )
   } else if (inBag === 0) {
     // First unit: the "+" is the add button.
     cta = (
-      <button className="btn btn--primary" onClick={plus}>
+      <button className="btn btn--cta" onClick={plus}>
+        <CtaShape />
         {selected ? (
           <>
             <span className="btn__plus" aria-hidden>
@@ -113,7 +118,8 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
             +
           </button>
         </div>
-        <Link href="/checkout" className="btn btn--primary btn--icon">
+        <Link href="/checkout" className="btn btn--cta btn--icon">
+          <CtaShape />
           Checkout ({bagCount})
           <Image src="/icons/rambu-rp.png" alt="" width={28} height={28} className="btn__rambu" />
         </Link>
