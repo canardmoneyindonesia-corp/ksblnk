@@ -35,7 +35,8 @@ Requires Node 24 (Payload asks for ≥ 24.22), pnpm and Docker.
 pnpm install
 pnpm infra:up          # Postgres :55432, Redis :6380 (non-default ports on purpose)
 pnpm dev               # web :3000, cms :3001, api :4000
-pnpm seed              # once the CMS is up: admin + 6 demo products
+pnpm seed              # once the CMS is up: admin + the 7 shoot products (demo catalog + its photos)
+pnpm seed:reset        # delete every product and its photos, then seed the catalog again
 pnpm drop:sim          # oversell / load test (args: units buyers concurrency)
 ```
 
@@ -57,7 +58,7 @@ Deploy to Vercel with **no environment variables at all** and the whole buying f
 | cms | no `DATABASE_URL` | `/cms/*` shows a short "CMS is off in demo mode" page instead of crashing. |
 
 - `DEMO_MODE=1` forces demo mode on and `DEMO_MODE=0` forces it off, in both web and api.
-- To change what the demo sells, edit [`packages/types/src/demo-catalog.json`](packages/types/src/demo-catalog.json). `stock` is the number of units on sale when an instance starts, and photos live in `apps/web/public/demo/`. The defaults are the 7 pieces from the modeled shoot, with placeholder prices. The white tee is almost gone and the tank is sold out, so the "Last N" and "Sold out" states show up.
+- To change what the demo sells, edit [`packages/types/src/demo-catalog.json`](packages/types/src/demo-catalog.json). `pnpm seed` loads the same catalog and photos into the CMS database, so both modes sell the same pieces. `stock` is the number of units on sale when an instance starts, and photos live in `apps/web/public/demo/`. The defaults are the 7 pieces from the modeled shoot, with placeholder prices. The white tee is almost gone and the tank is sold out, so the "Last N" and "Sold out" states show up.
 - The stock lives in each serverless instance's memory. A cold start resets it to the JSON values, and two instances don't share sales. That's fine for a demo and never acceptable for a real drop. For the same reason, an order id an instance doesn't know is reported as paid.
 - `/api/internal/*` stays locked: `INTERNAL_SECRET` gets a random value unless you set it.
 - Locally, `pnpm dev` with empty `.env` files works too: the storefront forwards `/api/*` to the API on :4000 whenever `NEXT_PUBLIC_API_URL` is unset.
@@ -75,6 +76,8 @@ Deploy to Vercel with **no environment variables at all** and the whole buying f
 | everything else | `web` (Next storefront) | |
 
 Service bindings (Vercel injects these at runtime; don't set them yourself): `cms` gets `API_URL`, `web` gets `CMS_URL`. There is no `cms -> web` binding because Vercel rejects circular bindings; the CMS reaches the storefront's revalidate route on the public URL (`WEB_URL` if set, else the deployment's own URL; on protected previews enable "Protection Bypass for Automation"). They don't exist during builds, so the storefront build pre-renders from `CMS_BUILD_URL` if you set it (your public domain), otherwise it builds empty pages that ISR fills in. Leave `NEXT_PUBLIC_API_URL` unset on Vercel (defaults to `/api`).
+
+Vercel doesn't route `/_next/image` to its image optimizer in a services deployment (it answers 404), so on Vercel the storefront serves photos as-is (`images.unoptimized`), cached by the CDN. Upload them at the size you want shown (the shoot photos are 1200×1500 JPEGs, ~100 KB).
 
 There is no long-running process on Vercel, so the timers that run locally don't run there: the API sweeper (`POST /api/internal/sweep`, bearer `INTERNAL_SECRET`) and the CMS order import must be triggered by a scheduler. Run `vercel dev` to try all three services together locally.
 

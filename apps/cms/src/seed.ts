@@ -1,43 +1,50 @@
 /**
- * Local demo data: an admin user + 6 products with generated placeholder photos.
- *   pnpm seed        (from the repo root, with Postgres up)
- * Safe to re-run: does nothing if products already exist.
+ * Local data: an admin user + the products of the modeled shoot, taken from the demo catalog
+ * (packages/types/src/demo-catalog.json) with its photos (apps/web/public/demo/), so the
+ * database store and the no-database demo sell the same pieces.
+ *
+ *   pnpm seed          (from the repo root, with Postgres up) - does nothing if products exist
+ *   pnpm seed:reset    deletes every product (and its photos), then seeds the catalog again
  */
 import config from '@payload-config'
+import { DEMO_CATALOG } from '@kskblnk/types/demo'
+import { readFile } from 'fs/promises'
+import path from 'path'
 import { getPayload } from 'payload'
-import sharp from 'sharp'
+import { fileURLToPath } from 'url'
 import { pushAll } from './lib/sync'
 
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? 'admin@kskblnk.local'
 const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD ?? 'kskblnk-admin'
+const RESET = process.argv.includes('--reset') || process.env.SEED_RESET === '1'
 
-const SIZES = ['S', 'M', 'L', 'XL']
-
-const products = [
-  { name: 'Logo Tee Black', code: 'TEE-BLK', price: 350000, bg: '#111111', fg: '#f4f4f0', sizes: SIZES, stock: [6, 12, 12, 4] },
-  { name: 'Logo Tee Bone', code: 'TEE-BON', price: 350000, bg: '#e9e4d8', fg: '#111111', sizes: SIZES, stock: [5, 10, 10, 5] },
-  { name: 'Heavy Hoodie', code: 'HOOD-BLK', price: 850000, bg: '#2b2b2b', fg: '#d8ff3c', sizes: SIZES, stock: [3, 8, 8, 3] },
-  { name: 'Longsleeve Static', code: 'LS-STA', price: 450000, bg: '#3c4a5c', fg: '#f4f4f0', sizes: SIZES, stock: [4, 6, 6, 2] },
-  { name: '6-Panel Cap', code: 'CAP-BLK', price: 275000, bg: '#151515', fg: '#ff4d2e', sizes: ['OS'], stock: [25] },
-  // Upcoming drop: shows a countdown, checkout refused by the API until dropAt.
-  { name: 'Tote Bag 002', code: 'TOTE-002', price: 199000, bg: '#d8ff3c', fg: '#111111', sizes: ['OS'], stock: [40], dropInHours: 48 },
-]
-
-function placeholder(label: string, bg: string, fg: string) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500">
-    <rect width="100%" height="100%" fill="${bg}"/>
-    <text x="50%" y="47%" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="120" font-weight="900" fill="${fg}">KSKBLNK</text>
-    <text x="50%" y="56%" text-anchor="middle" font-family="Arial, sans-serif" font-size="56" fill="${fg}" opacity="0.7">${label}</text>
-  </svg>`
-  return sharp(Buffer.from(svg)).jpeg({ quality: 82 }).toBuffer()
-}
+/** The demo photos are the storefront's public files: /demo/x.jpg -> apps/web/public/demo/x.jpg */
+const WEB_PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../web/public')
 
 const payload = await getPayload({ config })
 
-const existing = await payload.count({ collection: 'products', overrideAccess: true })
-if (existing.totalDocs > 0) {
-  payload.logger.info(`Seed skipped: ${existing.totalDocs} products already exist.`)
-  process.exit(0)
+const existing = await payload.find({
+  collection: 'products',
+  depth: 0,
+  pagination: false,
+  overrideAccess: true,
+})
+if (existing.docs.length > 0) {
+  if (!RESET) {
+    payload.logger.info(
+      `Seed skipped: ${existing.docs.length} products already exist. Run "pnpm seed:reset" to replace them with the catalog.`,
+    )
+    process.exit(0)
+  }
+  const mediaIds = new Set<number | string>()
+  for (const p of existing.docs) {
+    for (const img of p.images ?? []) mediaIds.add(typeof img === 'object' ? img.id : img)
+    await payload.delete({ collection: 'products', id: p.id, overrideAccess: true })
+  }
+  for (const id of mediaIds) {
+    await payload.delete({ collection: 'media', id, overrideAccess: true }).catch(() => {})
+  }
+  payload.logger.info(`Reset: deleted ${existing.docs.length} products and ${mediaIds.size} photos.`)
 }
 
 const users = await payload.count({ collection: 'users', overrideAccess: true })
@@ -46,18 +53,15 @@ if (users.totalDocs === 0) {
   payload.logger.info(`Admin created: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD} (change it!)`)
 }
 
-for (const [i, p] of products.entries()) {
+for (const [i, p] of DEMO_CATALOG.entries()) {
   const images = []
-  for (const view of ['FRONT', 'BACK']) {
+  for (const img of p.images) {
+    const file = path.join(WEB_PUBLIC, img.url)
+    const data = await readFile(file)
     const media = await payload.create({
       collection: 'media',
-      data: { alt: `${p.name} ${view.toLowerCase()}` },
-      file: {
-        data: await placeholder(`${p.name.toUpperCase()} / ${view}`, p.bg, p.fg),
-        mimetype: 'image/jpeg',
-        name: `${p.code.toLowerCase()}-${view.toLowerCase()}.jpg`,
-        size: 0,
-      },
+      data: { alt: img.alt || p.name },
+      file: { data, mimetype: 'image/jpeg', name: path.basename(file), size: data.length },
     })
     images.push(media.id)
   }
@@ -67,17 +71,17 @@ for (const [i, p] of products.entries()) {
     overrideAccess: true,
     data: {
       name: p.name,
-      slug: '',
+      slug: p.slug,
       published: true,
       sortOrder: i,
       price: p.price,
-      description: `${p.name}. Limited run, printed in small batches. No restock guaranteed.`,
+      description: p.description,
       images,
-      dropAt: p.dropInHours ? new Date(Date.now() + p.dropInHours * 3_600_000).toISOString() : null,
-      variants: p.sizes.map((size, j) => ({ label: size, sku: `${p.code}-${size}`, stock: p.stock[j] ?? 0 })),
+      dropAt: p.dropAt,
+      variants: p.variants.map(({ label, sku, stock }) => ({ label, sku, stock })),
     },
   })
-  payload.logger.info(`Created ${p.name}`)
+  payload.logger.info(`Created ${p.name} (${images.length} photos)`)
 }
 
 const res = await pushAll(payload)

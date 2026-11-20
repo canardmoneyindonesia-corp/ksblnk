@@ -12,6 +12,7 @@
     "infra:up": "docker compose up -d",
     "infra:down": "docker compose down",
     "seed": "pnpm --filter @kskblnk/cms seed",
+    "seed:reset": "pnpm --filter @kskblnk/cms seed:reset",
     "drop:sim": "pnpm --filter @kskblnk/api drop:sim"
   },
   "devDependencies": {

@@ -21,6 +21,10 @@ const nextConfig: NextConfig = {
       },
       // Production media on object storage, e.g. https://media.example.com/** (add yours here)
     ],
+    // Vercel "services" deployments (vercel.json) don't route /_next/image to Vercel's image
+    // optimizer: it answers 404 and every photo shows blank. So on Vercel, <Image> points
+    // straight at the file (/demo/... or /cms/api/media/file/...), which the CDN caches.
+    unoptimized: Boolean(process.env.VERCEL),
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60 * 60 * 24 * 30,
     // Only needed for local dev, where the CMS runs on localhost.
