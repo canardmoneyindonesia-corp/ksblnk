@@ -1,8 +1,8 @@
 import { useId } from 'react'
 
 /*
- * Body of the checkout CTA: a black bar with lettering at both ends (BB on the left, the
- * AS / 97 cluster on the right, with the bar's right edge hugging it). From the design's
+ * Body of the checkout CTA: a bar with BASBOI lettering at both ends (BB on the left, the
+ * AS / OI cluster on the right, with the bar's right edge hugging it). From the design's
  * SVG export, in its own units (bar ≈ 2170 × 345).
  *
  * The end lettering can't stretch, so the shape is three parts: two fixed caps that scale
@@ -19,6 +19,10 @@ const BLEED = 8
 
 // Left cap: x 0–150. Two stacked Bs, the bar starting under them at x 90.
 const LEFT_W = 150
+// Per-letter classes, so a letter can be given its own `fill` in CSS (none set today: they all
+// inherit the bar's currentColor). Order matches the paths: top B, bottom B / A, S, O (flower), I.
+const LEFT_CLASSES = ['cta-shape__b1', 'cta-shape__b2']
+const RIGHT_CLASSES = ['cta-shape__a', 'cta-shape__s', 'cta-shape__o', 'cta-shape__i']
 const LEFT_GLYPHS = [
   'M125.623,29.911c-.593-1.774-1.269-3.451-2.009-4.993C112.847,2.5,88.787,1.437,68.433,3.369c-.498.047-1.014.094-1.511.121-7.58.69-15.239,1.016-22.855,1.221-4.278.098-8.536.156-12.76.213-3.604.251-7.365.545-10.619,2.736-3.752,2.502-6.25,7.235-7.438,12.053-1.205,4.818-1.276,9.802-1.326,14.705-.129,9.24-.612,18.666-.748,28.008-.044,3.788-.018,7.557.095,11.282-.007.101.005.182-.002.284.017.526.018,1.032.051,1.559.269,6.56-.282,13.131-1.054,19.664-1.645,13.839-3.855,27.705-4.147,41.505-.315,15.705,5.483,23.669,17.472,26.343,4.158.937,8.564.452,12.906-.113,11.289-1.49,22.486-1.581,33.6-.415,5.159.539,10.352.813,15.546,1.067,5.84.306,11.701-.22,17.563-1.291,9.995-1.817,19.554-5.592,27.845-13.444,7.473-7.11,11.589-16.445,13.912-27.091,3.551-16.336-.859-32.666-11.804-41.857-2.542-2.133-5.147-4.083-8.058-5.543-9.283-4.715-.082-12.227,1.869-19.282,2.215-8.01,1.222-17.499-1.346-25.185Z',
   'M145.591,255.339c-2.733-2.237-5.542-4.298-8.719-5.835-5.221-2.587-5.849-6.555-2.045-12.04,2.002-2.899,3.615-5.971,4.932-9.239,15.187-36.275-25.188-50.688-25.188-50.688-.806-.253-1.647-.369-2.438-.603-11.195-3.132-23.065-2.431-34.835-1.537-.557.039-1.133.078-1.705.097-8.524.603-17.11.836-25.66.934-4.802.058-9.579.058-14.303.058-4.053.195-8.273.447-12.044,2.664-4.344,2.529-7.411,7.391-8.993,12.351-1.615,4.94-1.973,10.095-2.301,15.152-.657,9.55-1.711,19.275-2.378,28.903-.256,3.91-.439,7.8-.527,11.651-.015.117.011.195,0,.292-.014.545-.044,1.07-.039,1.595l-.002.019c-.063,6.789-1.033,13.557-2.265,20.287-2.602,14.276-5.845,28.553-6.927,42.791-1.223,16.221,4.835,24.527,18.125,27.444,4.595,1.031,9.571.584,14.467.058,12.721-1.381,25.261-1.303,37.657.058,5.733.623,11.536.973,17.342,1.303,6.527.408,13.127-.058,19.744-1.089,11.303-1.731,22.217-5.485,31.932-13.479,8.764-7.236,13.9-16.824,17.085-27.775,4.881-16.824.843-33.746-10.914-43.374Z',
@@ -55,11 +59,12 @@ export function CtaShape() {
           <path d={LEFT_HOLES} fill="#000" />
         </mask>
         <g mask={`url(#${leftMask})`} fill="currentColor">
-          {LEFT_GLYPHS.map((d) => (
-            <path key={d.slice(0, 12)} d={d} />
-          ))}
-          {/* bar start, running past the cap so no hairline shows at the seam */}
+          {/* bar start, running past the cap so no hairline shows at the seam; drawn first so
+              the coloured Bs sit on top of it */}
           <rect x="90" y="3.25" width={LEFT_W - 90 + BLEED} height="337.25" />
+          {LEFT_GLYPHS.map((d, i) => (
+            <path key={d.slice(0, 12)} d={d} className={`cta-shape__glyph ${LEFT_CLASSES[i]}`} />
+          ))}
         </g>
       </svg>
       <span className="cta-shape__mid" />
@@ -82,8 +87,8 @@ export function CtaShape() {
         <g mask={`url(#${rightMask})`} fill="currentColor">
           <path d={RIGHT_BAR} />
           <g transform={GLYPH_T}>
-            {RIGHT_GLYPHS.map((d) => (
-              <path key={d.slice(0, 12)} d={d} />
+            {RIGHT_GLYPHS.map((d, i) => (
+              <path key={d.slice(0, 12)} d={d} className={`cta-shape__glyph ${RIGHT_CLASSES[i]}`} />
             ))}
           </g>
         </g>

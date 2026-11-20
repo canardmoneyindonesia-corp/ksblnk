@@ -1,11 +1,13 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { usePlayer } from '@/lib/player'
 
 /**
  * A grid tile the same size as a product card that plays one track.
  * Visual: a spinning CD with a progress ring and live frequency bars.
- * v1: one hardcoded track; no CMS wiring yet.
+ * Playback lives in the app-wide PlayerProvider, so the track keeps going when you
+ * leave the page (the MiniPlayer bar takes over the controls).
  */
 export function MusicCard({
   src,
@@ -21,37 +23,16 @@ export function MusicCard({
   video?: string
   poster?: string
 }) {
-  const audio = useRef<HTMLAudioElement>(null)
   const clip = useRef<HTMLVideoElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
-  const analyser = useRef<AnalyserNode | null>(null)
-  const ctx = useRef<AudioContext | null>(null)
-  const [playing, setPlaying] = useState(false)
-  const [progress, setProgress] = useState(0)
+  const player = usePlayer()
+  const mine = player.track?.src === src
+  const playing = mine && player.playing
+  const progress = mine ? player.progress : 0
+  const analyser = player.analyser
 
-  // Wire up Web Audio once, on first play (browsers need a user gesture).
-  function ensureAudioGraph() {
-    if (ctx.current || !audio.current) return
-    const ac = new AudioContext()
-    const node = ac.createMediaElementSource(audio.current)
-    const an = ac.createAnalyser()
-    an.fftSize = 64
-    node.connect(an)
-    an.connect(ac.destination)
-    ctx.current = ac
-    analyser.current = an
-  }
-
-  async function toggle() {
-    const el = audio.current
-    if (!el) return
-    if (el.paused) {
-      ensureAudioGraph()
-      await ctx.current?.resume()
-      await el.play()
-    } else {
-      el.pause()
-    }
+  function toggle() {
+    void player.toggle({ src, title, artist })
   }
 
   // Frequency bars along the bottom of the tile.
@@ -60,7 +41,7 @@ export function MusicCard({
     let raf = 0
     const draw = () => {
       const c = canvas.current
-      const an = analyser.current
+      const an = analyser
       if (c && an) {
         const g = c.getContext('2d')!
         const w = (c.width = c.clientWidth * devicePixelRatio)
@@ -70,7 +51,7 @@ export function MusicCard({
         const n = 24
         const bw = w / n
         g.clearRect(0, 0, w, h)
-        g.fillStyle = '#f6e034'
+        g.fillStyle = '#ffe300'
         for (let i = 0; i < n; i++) {
           const v = data[i]! / 255
           const bh = Math.max(2, v * h)
@@ -81,7 +62,7 @@ export function MusicCard({
     }
     raf = requestAnimationFrame(draw)
     return () => cancelAnimationFrame(raf)
-  }, [playing])
+  }, [playing, analyser])
 
   // Keep the disc video in step with the track.
   useEffect(() => {
@@ -90,8 +71,6 @@ export function MusicCard({
     if (playing) void v.play().catch(() => {})
     else v.pause()
   }, [playing])
-
-  useEffect(() => () => void ctx.current?.close(), [])
 
   const R = 47
   const C = 2 * Math.PI * R
@@ -145,21 +124,6 @@ export function MusicCard({
         <span className="card__name">{title}</span>
         <span className="card__price">{artist}</span>
       </div>
-      <audio
-        ref={audio}
-        src={src}
-        preload="none"
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={() => {
-          setPlaying(false)
-          setProgress(0)
-        }}
-        onTimeUpdate={(e) => {
-          const el = e.currentTarget
-          if (el.duration) setProgress(el.currentTime / el.duration)
-        }}
-      />
     </div>
   )
 }

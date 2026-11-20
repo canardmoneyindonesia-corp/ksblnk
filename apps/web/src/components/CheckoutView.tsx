@@ -172,7 +172,6 @@ function Bag({ products, step }: { products: Product[]; step: 'bag' | 'shipping'
     return (
       <section className="checkout">
         <Steps step="shipping" />
-        <h1 className="checkout__title">Shipping</h1>
 
         <Link href="/checkout" className="recap" aria-label="Edit bag">
           <span className="recap__thumbs">

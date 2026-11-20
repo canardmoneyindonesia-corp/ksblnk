@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from 'next'
+import { MiniPlayer } from '@/components/MiniPlayer'
 import { SoldOutGate } from '@/components/SoldOutGate'
 import { Topbar } from '@/components/Topbar'
 import { WaitingScreen } from '@/components/WaitingScreen'
 import { getProducts } from '@/lib/products'
+import { PlayerProvider } from '@/lib/player'
 import { StockProvider } from '@/lib/stock'
 import { isWaitingMode } from '@/lib/waiting'
 import { sfPro, sfProItalic } from '@/fonts'
@@ -59,10 +61,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       ) : (
       <body>
         <StockProvider>
-          <SoldOutGate skus={watch.skus} dropAts={watch.dropAts}>
-            <Topbar />
-            <main>{children}</main>
-          </SoldOutGate>
+          <PlayerProvider>
+            <MiniPlayer />
+            <SoldOutGate skus={watch.skus} dropAts={watch.dropAts}>
+              <Topbar />
+              <main>{children}</main>
+            </SoldOutGate>
+          </PlayerProvider>
         </StockProvider>
       </body>
       )}

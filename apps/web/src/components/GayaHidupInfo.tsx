@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { usePlayer } from '@/lib/player'
 import { InfoIcon } from './InfoTip'
 
 /**
@@ -13,6 +14,7 @@ export function GayaHidupInfo() {
   const clip = useRef<HTMLVideoElement>(null)
   const audio = useRef<HTMLAudioElement>(null)
   const [playing, setPlaying] = useState(false)
+  const player = usePlayer()
 
   function play() {
     void audio.current?.play().catch(() => {})
@@ -25,6 +27,7 @@ export function GayaHidupInfo() {
   }
 
   function open() {
+    player.pause() // the background track would play over the clip
     dialog.current?.showModal()
     play() // inside the click gesture, so autoplay with sound is allowed
   }

@@ -6,7 +6,7 @@
   --muted: #6d6d68;
   --line: #dcdad3;
   --card: #e9e7e0;
-  --accent: #f6e034;
+  --accent: #ffe300;
   --danger: #d6331c;
   --gutter: 12px;
   --bar-h: 64px;
@@ -787,7 +787,7 @@ main {
   white-space: nowrap;
 }
 
-/* Size · − qty + · + Size · Remove: one row (wraps on narrow screens), one control height, one border, one fill. */
+/* Size · − qty + · Add one in another size: one row (wraps on narrow screens), one control height, one border, one fill. */
 .line__controls {
   display: flex;
   flex-wrap: wrap;
@@ -797,9 +797,18 @@ main {
   padding-top: 8px;
 }
 
+/* Under the controls: Remove on the right, on one short row. */
+.line__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 2px;
+}
+
 .line__remove {
   margin-left: auto;
-  min-height: 40px;
+  min-height: 32px;
   padding: 0 2px;
   border: 0;
   background: transparent;
@@ -813,11 +822,6 @@ main {
 
 .line__remove:hover {
   color: var(--ink);
-}
-
-.line__note {
-  color: var(--muted);
-  font-size: 12px;
 }
 
 .qty {
@@ -1463,11 +1467,6 @@ main {
   outline: none;
 }
 
-.quick__step button:active:not(:disabled) {
-  background: var(--ink);
-  color: var(--bg);
-}
-
 .quick__step button:disabled {
   opacity: 0.3;
   cursor: not-allowed;
@@ -1478,14 +1477,6 @@ main {
   text-align: center;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-}
-
-.quick__opt--in .quick__step-n {
-  align-self: stretch;
-  display: grid;
-  place-items: center;
-  background: var(--ink);
-  color: var(--bg);
 }
 
 .quick__menu-foot {
@@ -2323,7 +2314,7 @@ main {
   appearance: none;
 }
 
-/* "+ Size": same box, lighter label, so it reads as an action rather than the line's size. */
+/* "Add one in another size": same box, lighter label, so it reads as an action rather than the line's size. */
 .line__size--add {
   padding-right: 12px;
   background-image: none;
@@ -2467,4 +2458,80 @@ main {
   .money-rain--loop {
     display: none;
   }
+}
+
+/* ---------- mini player: thin now-playing strip, keeps the track going across pages ---------- */
+.mini-player {
+  position: sticky;
+  top: 0;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  height: calc(26px + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) 4px 0 var(--gutter);
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.mini-player__toggle {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mini-player__icon {
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+}
+
+.mini-player__title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0.85;
+}
+
+.mini-player__title strong {
+  font-weight: 600;
+  opacity: 1;
+}
+
+.mini-player__close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.mini-player__close:hover {
+  opacity: 1;
+}
+
+.mini-player__progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--accent);
+  transform-origin: left;
 }

@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { cart, useCart } from '@/lib/cart'
 import { useStock } from '@/lib/stock'
 
-/** One bag row (photo, name, price, then size · − qty + · + another size · Remove). Used by the checkout page and the home bag sheet. */
+/** One bag row (photo, name, price, then size · − qty + · + another size, then Remove on the right). Used by the checkout page and the home bag sheet. */
 export function BagLine({
   product,
   label,
@@ -26,11 +26,10 @@ export function BagLine({
 }) {
   const img = product.images[0]
   const cap = available ?? Infinity
-  const atCap = !out && qty >= cap
   const { stock, ready } = useStock()
   const multiSize = product.variants.length > 1
   const inBag = useCart()
-  // Sizes of this product not in the bag yet and not sold out: what "+ Size" can add.
+  // Sizes of this product not in the bag yet and not sold out: what "Add one in another size" can add.
   const otherSizes = multiSize
     ? product.variants.filter((v) => !inBag.some((l) => l.sku === v.sku) && !(ready && stock[v.sku] === 0))
     : []
@@ -104,7 +103,7 @@ export function BagLine({
               aria-label={`Add ${product.name} in another size`}
             >
               <option value="" disabled>
-                + Size
+                Add one in another size
               </option>
               {otherSizes.map((v) => (
                 <option key={v.sku} value={v.sku}>
@@ -113,11 +112,12 @@ export function BagLine({
               ))}
             </select>
           )}
+        </div>
+        <div className="line__foot">
           <button className="line__remove" onClick={() => cart.remove([sku])}>
             Remove
           </button>
         </div>
-        {atCap && <span className="line__note">Max for this drop</span>}
       </div>
     </li>
   )
