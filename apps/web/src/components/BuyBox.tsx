@@ -1,6 +1,6 @@
 'use client'
 
-import { LIMITS, type Variant } from '@kskblnk/types'
+import type { Variant } from '@kskblnk/types'
 import Link from 'next/link'
 import { useState } from 'react'
 import { cart, cartCount, useCart } from '@/lib/cart'
@@ -13,7 +13,6 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
   const left = useCountdown(dropAt)
   const [selected, setSelected] = useState<string | null>(variants.length === 1 ? variants[0]!.sku : null)
   const [nudge, setNudge] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const avail = (sku: string) => (ready && sku in stock ? stock[sku]! : undefined)
   const isOut = (sku: string) => avail(sku) === 0
@@ -34,13 +33,11 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
       setTimeout(() => setNudge(false), 600)
       return
     }
-    const r = cart.add(selected, 1, cap)
-    setError(r === 'bag-full' ? `Your bag is full (${LIMITS.maxLines} different items max).` : null)
+    cart.add(selected, 1, cap)
   }
 
   function minus() {
     if (selected) cart.set(selected, inBag - 1)
-    setError(null)
   }
 
   let hint: React.ReactNode = null
@@ -126,10 +123,7 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
                 aria-checked={selected === v.sku}
                 className={`size${selected === v.sku ? ' size--on' : ''}${out ? ' size--out' : ''}`}
                 disabled={out && q === 0}
-                onClick={() => {
-                  setSelected(v.sku)
-                  setError(null)
-                }}
+                onClick={() => setSelected(v.sku)}
               >
                 {v.label}
                 {n !== undefined && n > 0 && n <= 3 && <small>{n} left</small>}
@@ -144,9 +138,9 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
         </div>
       )}
       <div className="cta-bar">
-        {(error || hint) && (
-          <p className={`cta-hint${error ? ' cta-hint--error' : ''}`} aria-live="polite">
-            {error ?? hint}
+        {hint && (
+          <p className="cta-hint" aria-live="polite">
+            {hint}
           </p>
         )}
         {cta}

@@ -232,6 +232,10 @@ export interface Product {
      */
     sku: string;
     stock: number;
+    /**
+     * Optional. Shown under the size in the size picker. Empty = nothing shown.
+     */
+    detail?: string | null;
     id?: string | null;
   }[];
   updatedAt: string;
@@ -422,6 +426,7 @@ export interface ProductsSelect<T extends boolean = true> {
         label?: T;
         sku?: T;
         stock?: T;
+        detail?: T;
         id?: T;
       };
   updatedAt?: T;

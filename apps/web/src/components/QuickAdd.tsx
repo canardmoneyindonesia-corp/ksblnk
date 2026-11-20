@@ -1,10 +1,13 @@
 'use client'
 
-import { LIMITS, type Variant } from '@kskblnk/types'
+import type { Variant } from '@kskblnk/types'
 import { useEffect, useRef, useState } from 'react'
 import { cart, useCart } from '@/lib/cart'
 import { shopUi, useOpenPicker } from '@/lib/shop-ui'
 import { useCountdown, useStock } from '@/lib/stock'
+
+/** Buttons that arrow keys move between (not the sheet's "×", hidden on desktop). */
+const NAV_BUTTONS = '.quick__opt button:not(:disabled), .quick__done'
 
 /**
  * "+" on a home grid card. One size: adds straight to the bag.
@@ -30,7 +33,7 @@ export function QuickAdd({ id, name, variants, dropAt }: { id: string; name: str
   // Close the dropdown on outside tap or Escape; put keyboard focus on the first size.
   useEffect(() => {
     if (!open) return
-    menu.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus({ preventScroll: true })
+    menu.current?.querySelector<HTMLButtonElement>(NAV_BUTTONS)?.focus({ preventScroll: true })
     const onDown = (e: PointerEvent) => {
       if (!root.current?.contains(e.target as Node)) shopUi.openPicker(null)
     }
@@ -71,7 +74,7 @@ export function QuickAdd({ id, name, variants, dropAt }: { id: string; name: str
       setMsg(null)
       if (!open) setFlash(true)
     } else {
-      setMsg(r === 'bag-full' ? `Bag full (${LIMITS.maxLines} items max)` : 'No more left in this size')
+      setMsg('No more left in this size')
     }
   }
 
@@ -90,7 +93,7 @@ export function QuickAdd({ id, name, variants, dropAt }: { id: string; name: str
   function onMenuKey(e: React.KeyboardEvent<HTMLUListElement>) {
     if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return
     e.preventDefault()
-    const items = [...e.currentTarget.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')]
+    const items = [...e.currentTarget.querySelectorAll<HTMLButtonElement>(NAV_BUTTONS)]
     const i = items.indexOf(document.activeElement as HTMLButtonElement)
     const next = e.key === 'ArrowDown' ? (i + 1) % items.length : (i - 1 + items.length) % items.length
     items[next]?.focus()
@@ -103,7 +106,11 @@ export function QuickAdd({ id, name, variants, dropAt }: { id: string; name: str
       {open && (
         <ul className="quick__menu" aria-label={`Choose sizes for ${name}`} ref={menu} onKeyDown={onMenuKey}>
           <li role="presentation" className={`quick__menu-head${msg ? ' quick__menu-head--error' : ''}`}>
-            {msg ?? 'Choose size'}
+            <span>{msg ?? 'Choose size'}</span>
+            {/* Phone bottom sheet only (CSS): the card's "×" stays on the card, far from the sheet. */}
+            <button className="quick__close" onClick={() => shopUi.openPicker(null)} aria-label="Close sizes">
+              ×
+            </button>
           </li>
           {variants.map((v) => {
             const n = avail(v.sku)
@@ -113,8 +120,13 @@ export function QuickAdd({ id, name, variants, dropAt }: { id: string; name: str
             const meta = out ? 'Sold out' : n !== undefined && n <= 3 ? `${n} left` : null
             return (
               <li key={v.sku} role="group" aria-label={`Size ${v.label}`} className={`quick__opt${out ? ' quick__opt--out' : ''}${q > 0 ? ' quick__opt--in' : ''}`}>
-                <span className="quick__opt-label">{v.label}</span>
-                {meta && <span className={`quick__opt-meta${!out ? ' quick__opt-meta--low' : ''}`}>{meta}</span>}
+                <span className="quick__opt-text">
+                  <span className="quick__opt-top">
+                    <span className="quick__opt-label">{v.label}</span>
+                    {meta && <span className={`quick__opt-meta${!out ? ' quick__opt-meta--low' : ''}`}>{meta}</span>}
+                  </span>
+                  {v.detail && <span className="quick__opt-detail">{v.detail}</span>}
+                </span>
                 <span className="quick__step">
                   <button
                     onClick={() => minus(v.sku)}

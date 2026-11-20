@@ -1,6 +1,6 @@
 'use client'
 
-import { LIMITS, type CartLine, type Product } from '@kskblnk/types'
+import type { CartLine, Product } from '@kskblnk/types'
 import { formatPrice } from '@kskblnk/ui'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -16,8 +16,6 @@ const MAX = 6
  */
 export function AddOns({ products, lines }: { products: Product[]; lines: CartLine[] }) {
   const { stock, ready } = useStock()
-  if (lines.length >= LIMITS.maxLines) return null // bag full: nothing could be added
-
   const inBag = new Set(lines.map((l) => l.sku))
   const now = Date.now()
   const picks = products

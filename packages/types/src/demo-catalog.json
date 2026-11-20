@@ -37,21 +37,25 @@
         {
           "sku": "POLO-KSB-YLW-S",
           "label": "S",
+          "detail": "Chest 50 · Length 68 cm",
           "stock": 4
         },
         {
           "sku": "POLO-KSB-YLW-M",
           "label": "M",
+          "detail": "Chest 53 · Length 71 cm",
           "stock": 8
         },
         {
           "sku": "POLO-KSB-YLW-L",
           "label": "L",
+          "detail": "Chest 56 · Length 74 cm",
           "stock": 8
         },
         {
           "sku": "POLO-KSB-YLW-XL",
           "label": "XL",
+          "detail": "Chest 59 · Length 76 cm",
           "stock": 3
         }
       ]
@@ -93,21 +97,25 @@
         {
           "sku": "TEE-ETE-YLW-S",
           "label": "S",
+          "detail": "Chest 50 · Length 68 cm",
           "stock": 6
         },
         {
           "sku": "TEE-ETE-YLW-M",
           "label": "M",
+          "detail": "Chest 53 · Length 71 cm",
           "stock": 10
         },
         {
           "sku": "TEE-ETE-YLW-L",
           "label": "L",
+          "detail": "Chest 56 · Length 74 cm",
           "stock": 10
         },
         {
           "sku": "TEE-ETE-YLW-XL",
           "label": "XL",
+          "detail": "Chest 59 · Length 76 cm",
           "stock": 4
         }
       ]
@@ -149,21 +157,25 @@
         {
           "sku": "TEE-ETE-NVY-S",
           "label": "S",
+          "detail": "Chest 50 · Length 68 cm",
           "stock": 5
         },
         {
           "sku": "TEE-ETE-NVY-M",
           "label": "M",
+          "detail": "Chest 53 · Length 71 cm",
           "stock": 10
         },
         {
           "sku": "TEE-ETE-NVY-L",
           "label": "L",
+          "detail": "Chest 56 · Length 74 cm",
           "stock": 10
         },
         {
           "sku": "TEE-ETE-NVY-XL",
           "label": "XL",
+          "detail": "Chest 59 · Length 76 cm",
           "stock": 5
         }
       ]
@@ -205,21 +217,25 @@
         {
           "sku": "TEE-ETE-WHT-S",
           "label": "S",
+          "detail": "Chest 50 · Length 68 cm",
           "stock": 1
         },
         {
           "sku": "TEE-ETE-WHT-M",
           "label": "M",
+          "detail": "Chest 53 · Length 71 cm",
           "stock": 2
         },
         {
           "sku": "TEE-ETE-WHT-L",
           "label": "L",
+          "detail": "Chest 56 · Length 74 cm",
           "stock": 1
         },
         {
           "sku": "TEE-ETE-WHT-XL",
           "label": "XL",
+          "detail": "Chest 59 · Length 76 cm",
           "stock": 0
         }
       ]
@@ -261,21 +277,25 @@
         {
           "sku": "LS-JDR-STR-S",
           "label": "S",
+          "detail": "Chest 50 · Length 68 cm",
           "stock": 3
         },
         {
           "sku": "LS-JDR-STR-M",
           "label": "M",
+          "detail": "Chest 53 · Length 71 cm",
           "stock": 6
         },
         {
           "sku": "LS-JDR-STR-L",
           "label": "L",
+          "detail": "Chest 56 · Length 74 cm",
           "stock": 6
         },
         {
           "sku": "LS-JDR-STR-XL",
           "label": "XL",
+          "detail": "Chest 59 · Length 76 cm",
           "stock": 2
         }
       ]
@@ -317,21 +337,25 @@
         {
           "sku": "TANK-CDB-WHT-S",
           "label": "S",
+          "detail": "Chest 50 · Length 68 cm",
           "stock": 0
         },
         {
           "sku": "TANK-CDB-WHT-M",
           "label": "M",
+          "detail": "Chest 53 · Length 71 cm",
           "stock": 0
         },
         {
           "sku": "TANK-CDB-WHT-L",
           "label": "L",
+          "detail": "Chest 56 · Length 74 cm",
           "stock": 0
         },
         {
           "sku": "TANK-CDB-WHT-XL",
           "label": "XL",
+          "detail": "Chest 59 · Length 76 cm",
           "stock": 0
         }
       ]
@@ -373,21 +397,25 @@
         {
           "sku": "SHORT-CDB-GRY-S",
           "label": "S",
+          "detail": "Waist 34 · Length 46 cm",
           "stock": 3
         },
         {
           "sku": "SHORT-CDB-GRY-M",
           "label": "M",
+          "detail": "Waist 37 · Length 48 cm",
           "stock": 6
         },
         {
           "sku": "SHORT-CDB-GRY-L",
           "label": "L",
+          "detail": "Waist 40 · Length 50 cm",
           "stock": 6
         },
         {
           "sku": "SHORT-CDB-GRY-XL",
           "label": "XL",
+          "detail": "Waist 43 · Length 52 cm",
           "stock": 2
         }
       ]

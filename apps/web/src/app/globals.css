@@ -19,11 +19,12 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   /* Type. Display = Adobe Kis (logotype, titles), UI = SF Pro, script = Acroterion JF (accents).
      Kis + Acroterion load from the Adobe Fonts kit (NEXT_PUBLIC_ADOBE_FONTS_KIT); the quoted
-     names catch locally installed copies. SF Pro can't be served on the web under Apple's
-     license, so it comes from the system stack: SF Pro on Apple devices, Helvetica/Segoe/Roboto elsewhere. */
+     names catch locally installed copies.
+     SF Pro: Apple devices use their built-in system SF (every weight, plus the Text optical size);
+     everyone else gets our self-hosted copy (src/fonts, --font-sf-pro, set by next/font on <html>). */
   --font-display: 'adobe-kis', 'Adobe Kis', 'Iowan Old Style', Georgia, serif;
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue',
-    'Segoe UI', Roboto, Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, var(--font-sf-pro, 'Helvetica Neue'), 'Segoe UI',
+    Roboto, Arial, sans-serif;
   --font-script: 'acroterion-jf', 'Acroterion JF', 'Snell Roundhand', cursive;
 }
 
@@ -1103,6 +1104,30 @@ main {
   min-width: 2ch;
 }
 
+/* Size label + stock note on top, measurements underneath. */
+.quick__opt-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px 0;
+}
+
+.quick__opt-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick__opt-detail {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .quick__opt-meta {
   font-size: 11px;
   font-weight: 600;
@@ -1182,7 +1207,8 @@ main {
   from { transform: scaleY(0.85); opacity: 0; }
 }
 
-.quick__backdrop {
+.quick__backdrop,
+.quick__close {
   display: none;
 }
 
@@ -1217,8 +1243,37 @@ main {
   }
 
   .quick__menu-head {
-    padding: 10px var(--gutter) 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px calc(var(--gutter) - 8px) 4px var(--gutter);
     font-size: 11px;
+  }
+
+  /* The sheet has its own "×" in the header; the card's rotated "+" would float over it. */
+  .quick__plus--open {
+    visibility: hidden;
+  }
+
+  .quick__close {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink);
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .quick__close:active {
+    background: var(--card);
   }
 
   .quick__menu-head--error {
@@ -1233,6 +1288,10 @@ main {
 
   .quick__opt-meta {
     font-size: 12px;
+  }
+
+  .quick__opt-detail {
+    font-size: 13px;
   }
 
   .quick__step button {
@@ -1543,10 +1602,10 @@ main {
   aspect-ratio: 4 / 5;
   padding: 0;
   border: 0;
-  background: radial-gradient(circle at 50% 42%, #2a2a28 0%, var(--ink) 70%);
+  background: #fff;
   overflow: hidden;
   cursor: pointer;
-  color: var(--bg);
+  color: var(--ink);
 }
 
 .music__disc-wrap {
@@ -1571,7 +1630,7 @@ main {
 }
 
 .music__ring-track {
-  stroke: rgb(255 255 255 / 0.12);
+  stroke: rgb(0 0 0 / 0.1);
 }
 
 .music__ring-fill {
@@ -1588,7 +1647,7 @@ main {
     radial-gradient(circle, transparent 0 9%, rgb(0 0 0 / 0.35) 9.5% 10%, transparent 10.5%),
     repeating-radial-gradient(circle, rgb(255 255 255 / 0.05) 0 1px, transparent 1px 3px),
     conic-gradient(from 0deg, #cfd3d6, #f3e9ff, #b7e4ff, #e6ffd0, #ffe0f0, #cfd3d6, #fff6c9, #c6d8ff, #cfd3d6);
-  box-shadow: 0 10px 30px rgb(0 0 0 / 0.5), inset 0 0 0 1px rgb(255 255 255 / 0.25);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.18), inset 0 0 0 1px rgb(255 255 255 / 0.25);
   animation: music-spin 3.2s linear infinite;
   animation-play-state: paused;
 }
@@ -1621,6 +1680,43 @@ main {
 
 .music__media--playing .music__disc {
   animation-play-state: running;
+}
+
+/* Disc with a video face: the clip sits under a see-through spinning disc (grooves + sheen). */
+.music__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--ink);
+}
+
+.music__disc--video {
+  background:
+    radial-gradient(circle, transparent 0 9%, rgb(0 0 0 / 0.35) 9.5% 10%, transparent 10.5%),
+    repeating-radial-gradient(circle, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 3px),
+    conic-gradient(
+      from 0deg,
+      rgb(255 255 255 / 0.22),
+      transparent 12%,
+      rgb(183 228 255 / 0.18) 25%,
+      transparent 38%,
+      rgb(255 255 255 / 0.22) 50%,
+      transparent 62%,
+      rgb(255 224 240 / 0.18) 75%,
+      transparent 88%,
+      rgb(255 255 255 / 0.22)
+    );
+}
+
+/* Shrink the label to a hub so the video reads. */
+.music__disc--video .music__label {
+  inset: 38%;
+  padding: 0;
+  font-size: 0;
+  box-shadow: 0 0 0 3px rgb(0 0 0 / 0.35);
 }
 
 .music__btn {
@@ -1857,4 +1953,36 @@ main {
   font-weight: 400;
   text-transform: none;
   letter-spacing: 0;
+}
+
+/* ---------- order paid: money rain overlay ---------- */
+.money-rain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  animation: money-rain-fade 6s linear forwards;
+}
+
+.money-rain video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@keyframes money-rain-fade {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }

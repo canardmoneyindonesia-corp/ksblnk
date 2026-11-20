@@ -114,6 +114,16 @@ export const Products: CollectionConfig = {
             },
           ],
         },
+        {
+          name: 'detail',
+          label: 'Size detail',
+          type: 'text',
+          maxLength: 80,
+          admin: {
+            placeholder: 'Chest 53 · Length 71 cm',
+            description: 'Optional. Shown under the size in the size picker. Empty = nothing shown.',
+          },
+        },
       ],
     },
   ],

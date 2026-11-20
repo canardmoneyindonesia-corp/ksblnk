@@ -7,8 +7,22 @@ import { useEffect, useRef, useState } from 'react'
  * Visual: a spinning CD with a progress ring and live frequency bars.
  * v1: one hardcoded track; no CMS wiring yet.
  */
-export function MusicCard({ src, title, artist }: { src: string; title: string; artist: string }) {
+export function MusicCard({
+  src,
+  title,
+  artist,
+  video,
+  poster,
+}: {
+  src: string
+  title: string
+  artist: string
+  /** Optional muted loop shown on the disc face; plays only while the track plays. */
+  video?: string
+  poster?: string
+}) {
   const audio = useRef<HTMLAudioElement>(null)
+  const clip = useRef<HTMLVideoElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
   const analyser = useRef<AnalyserNode | null>(null)
   const ctx = useRef<AudioContext | null>(null)
@@ -69,6 +83,14 @@ export function MusicCard({ src, title, artist }: { src: string; title: string; 
     return () => cancelAnimationFrame(raf)
   }, [playing])
 
+  // Keep the disc video in step with the track.
+  useEffect(() => {
+    const v = clip.current
+    if (!v) return
+    if (playing) void v.play().catch(() => {})
+    else v.pause()
+  }, [playing])
+
   useEffect(() => () => void ctx.current?.close(), [])
 
   const R = 47
@@ -94,7 +116,20 @@ export function MusicCard({ src, title, artist }: { src: string; title: string; 
               strokeDashoffset={C * (1 - progress)}
             />
           </svg>
-          <div className="music__disc" aria-hidden>
+          {video && (
+            <video
+              ref={clip}
+              className="music__video"
+              src={video}
+              poster={poster}
+              muted
+              loop
+              playsInline
+              preload="none"
+              aria-hidden
+            />
+          )}
+          <div className={`music__disc${video ? ' music__disc--video' : ''}`} aria-hidden>
             <div className="music__label">
               <span>KSKBLNK</span>
               <span>RADIO</span>

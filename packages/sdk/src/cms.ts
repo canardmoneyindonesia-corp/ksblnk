@@ -16,7 +16,7 @@ interface CmsProduct {
   price: number
   dropAt?: string | null
   images?: (CmsMedia | string | number)[] | null
-  variants?: { sku: string; label: string }[] | null
+  variants?: { sku: string; label: string; detail?: string | null }[] | null
 }
 
 function mapImage(m: CmsMedia | string | number): ProductImage | null {
@@ -43,7 +43,11 @@ export function mapCmsProduct(doc: CmsProduct): Product {
     images: (doc.images ?? [])
       .map(mapImage)
       .filter((m): m is ProductImage => m !== null),
-    variants: (doc.variants ?? []).map((v) => ({ sku: v.sku, label: v.label })),
+    variants: (doc.variants ?? []).map((v) => ({
+      sku: v.sku,
+      label: v.label,
+      ...(v.detail?.trim() ? { detail: v.detail.trim() } : {}),
+    })),
   }
 }
 

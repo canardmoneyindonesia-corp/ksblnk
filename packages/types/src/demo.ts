@@ -17,7 +17,7 @@ export const DEMO_CATALOG = raw.products as DemoProduct[]
 /** What the storefront renders (no stock numbers: those come live from the API, like in production). */
 export const DEMO_PRODUCTS: Product[] = DEMO_CATALOG.map(({ variants, ...p }) => ({
   ...p,
-  variants: variants.map(({ sku, label }) => ({ sku, label })),
+  variants: variants.map(({ sku, label, detail }) => ({ sku, label, ...(detail ? { detail } : {}) })),
 }))
 
 /** What the API loads, in the same shape the CMS pushes to POST /internal/sync. */

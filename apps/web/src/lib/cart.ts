@@ -1,6 +1,6 @@
 'use client'
 
-import { LIMITS, type CartLine } from '@kskblnk/types'
+import type { CartLine } from '@kskblnk/types'
 import { useSyncExternalStore } from 'react'
 
 /** Bag lives in localStorage only: zero server calls until the buyer hits "Pay". */
@@ -50,7 +50,7 @@ export function useCart() {
   return useSyncExternalStore(subscribe, snapshot, () => EMPTY)
 }
 
-export type AddResult = 'added' | 'max' | 'bag-full'
+export type AddResult = 'added' | 'max'
 
 export const cart = {
   /**
@@ -67,7 +67,6 @@ export const cart = {
       return 'added'
     }
     if (cap < 1) return 'max'
-    if (cur.length >= LIMITS.maxLines) return 'bag-full'
     save([...cur, { sku, qty: Math.min(qty, cap) }])
     return 'added'
   },

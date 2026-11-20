@@ -78,7 +78,7 @@ for (const [i, p] of DEMO_CATALOG.entries()) {
       description: p.description,
       images,
       dropAt: p.dropAt,
-      variants: p.variants.map(({ label, sku, stock }) => ({ label, sku, stock })),
+      variants: p.variants.map(({ label, sku, stock, detail }) => ({ label, sku, stock, detail })),
     },
   })
   payload.logger.info(`Created ${p.name} (${images.length} photos)`)

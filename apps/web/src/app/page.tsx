@@ -49,7 +49,13 @@ export default async function HomePage() {
       })}
       {/* Pinned to the right column, 2nd row via CSS (.grid__item--music). */}
       <li className="grid__item grid__item--music">
-        <MusicCard src="/music/kurang-riset.mp3" title="Kurang Riset" artist="Quest, Basboi & Wicigo Shawty" />
+        <MusicCard
+          src="/music/kurang-riset.mp3"
+          video="/fx/gaya-hidup.mp4"
+          poster="/fx/gaya-hidup.jpg"
+          title="Kurang Riset"
+          artist="Quest, Basboi & Wicigo Shawty"
+        />
       </li>
     </ul>
     <BagSheet products={products} />

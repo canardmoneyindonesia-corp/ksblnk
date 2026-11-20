@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import Link from 'next/link'
 import { StockProvider } from '@/lib/stock'
+import { sfPro, sfProItalic } from '@/fonts'
 import './globals.css'
 
 // Adobe Fonts web project (Adobe Kis + Acroterion JF). Adobe's terms require their embed
@@ -22,7 +23,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${sfPro.variable} ${sfProItalic.variable}`}>
       <head>
         {adobeFontsKit && (
           <>

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api'
 import { cart } from '@/lib/cart'
+import { MoneyRain } from './MoneyRain'
 
 const wib = new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })
 
@@ -58,6 +59,7 @@ export function OrderResult({ orderId, cancelled }: { orderId: string; cancelled
     case 'sold':
       return (
         <section className="notice">
+          <MoneyRain orderId={orderId} />
           <h1>Terima kasih.</h1>
           <p>
             Payment received{order.amount ? ` (${formatPrice(order.amount)})` : ''}. We'll contact you on WhatsApp /

@@ -6,9 +6,12 @@ import { z } from 'zod'
  */
 export const CURRENCY = 'IDR' as const
 
-/** Hard limits shared by the storefront (UI) and the API (enforcement). */
+/**
+ * API-side abuse guard only. Buyers have no bag limit; this just stops a hand-crafted
+ * checkout request from carrying thousands of lines (far more than the catalog has SKUs).
+ */
 export const LIMITS = {
-  maxLines: 5,
+  maxLines: 100,
 } as const
 
 export interface ProductImage {
@@ -23,6 +26,8 @@ export interface Variant {
   sku: string
   /** What the customer picks, e.g. "M". */
   label: string
+  /** Optional one-liner shown under the size in the picker, e.g. "Chest 53 · Length 71 cm". */
+  detail?: string
 }
 
 /** Public product shape used by the storefront. Never contains stock totals. */
