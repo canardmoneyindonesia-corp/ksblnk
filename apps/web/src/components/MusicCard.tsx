@@ -140,7 +140,6 @@ export function MusicCard({
           {playing ? '❚❚' : '▶'}
         </span>
         <canvas ref={canvas} className="music__bars" aria-hidden />
-        <span className="music__tag">Now playing</span>
       </button>
       <div className="card__info">
         <span className="card__name">{title}</span>

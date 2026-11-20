@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import Link from 'next/link'
+import { WaitingScreen } from '@/components/WaitingScreen'
 import { StockProvider } from '@/lib/stock'
+import { isWaitingMode } from '@/lib/waiting'
 import { sfPro, sfProItalic } from '@/fonts'
 import './globals.css'
 
@@ -22,6 +24,7 @@ export const viewport: Viewport = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const waiting = isWaitingMode()
   return (
     <html lang="en" className={`${sfPro.variable} ${sfProItalic.variable}`}>
       <head>
@@ -32,6 +35,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </>
         )}
       </head>
+      {waiting ? (
+        // Pre-drop: only the loop. Every route lands here, so no product, price or link leaks.
+        <body>
+          <WaitingScreen />
+        </body>
+      ) : (
       <body>
         <StockProvider>
           <header className="topbar">
@@ -42,6 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main>{children}</main>
         </StockProvider>
       </body>
+      )}
     </html>
   )
 }
