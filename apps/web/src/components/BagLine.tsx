@@ -4,10 +4,10 @@ import type { Product } from '@kskblnk/types'
 import { formatPrice } from '@kskblnk/ui'
 import Image from 'next/image'
 import Link from 'next/link'
-import { cart } from '@/lib/cart'
+import { cart, useCart } from '@/lib/cart'
 import { useStock } from '@/lib/stock'
 
-/** One bag row (photo, name, price, then size · − qty + · Remove). Used by the checkout page and the home bag sheet. */
+/** One bag row (photo, name, price, then size · − qty + · + another size · Remove). Used by the checkout page and the home bag sheet. */
 export function BagLine({
   product,
   label,
@@ -29,6 +29,11 @@ export function BagLine({
   const atCap = !out && qty >= cap
   const { stock, ready } = useStock()
   const multiSize = product.variants.length > 1
+  const inBag = useCart()
+  // Sizes of this product not in the bag yet and not sold out: what "+ Size" can add.
+  const otherSizes = multiSize
+    ? product.variants.filter((v) => !inBag.some((l) => l.sku === v.sku) && !(ready && stock[v.sku] === 0))
+    : []
   return (
     <li className={`line${out ? ' line--out' : ''}`}>
       <Link href={`/p/${product.slug}`} className="line__media">
@@ -88,6 +93,26 @@ export function BagLine({
               +
             </button>
           </div>
+          {otherSizes.length > 0 && (
+            <select
+              className="line__size line__size--add"
+              value=""
+              onChange={(e) => {
+                const to = e.target.value
+                if (to) cart.add(to, 1, ready && to in stock ? stock[to] : Infinity, sku)
+              }}
+              aria-label={`Add ${product.name} in another size`}
+            >
+              <option value="" disabled>
+                + Size
+              </option>
+              {otherSizes.map((v) => (
+                <option key={v.sku} value={v.sku}>
+                  {v.label}
+                </option>
+              ))}
+            </select>
+          )}
           <button className="line__remove" onClick={() => cart.remove([sku])}>
             Remove
           </button>

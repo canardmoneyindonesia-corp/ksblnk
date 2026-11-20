@@ -56,8 +56,9 @@ export const cart = {
   /**
    * Adds `qty` units, never above `max` (live stock left for this sku, when known).
    * Says why nothing was added so the UI can tell the buyer instead of failing silently.
+   * A new line goes right after `after` when given (e.g. another size of the same product), else at the end.
    */
-  add(sku: string, qty = 1, max = Infinity): AddResult {
+  add(sku: string, qty = 1, max = Infinity, after?: string): AddResult {
     const cap = max
     const cur = snapshot()
     const existing = cur.find((l) => l.sku === sku)
@@ -67,7 +68,9 @@ export const cart = {
       return 'added'
     }
     if (cap < 1) return 'max'
-    save([...cur, { sku, qty: Math.min(qty, cap) }])
+    const line = { sku, qty: Math.min(qty, cap) }
+    const at = after ? cur.findIndex((l) => l.sku === after) : -1
+    save(at < 0 ? [...cur, line] : [...cur.slice(0, at + 1), line, ...cur.slice(at + 1)])
     return 'added'
   },
   set(sku: string, qty: number) {

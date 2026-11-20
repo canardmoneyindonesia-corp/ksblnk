@@ -2,6 +2,7 @@
 
 import type { Product } from '@kskblnk/types'
 import { formatPrice } from '@kskblnk/ui'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import { cart, cartCount, useCart } from '@/lib/cart'
@@ -134,7 +135,6 @@ export function BagSheet({ products }: { products: Product[] }) {
   const subtotal = rows.reduce((n, r) => n + r.product.price * r.qty, 0)
   const avail = (sku: string) => (ready && sku in stock ? stock[sku]! : undefined)
   const outSkus = rows.filter((r) => (avail(r.sku) ?? Infinity) < r.qty).map((r) => r.sku)
-  const canAddMore = rows.some((r) => r.qty < (avail(r.sku) ?? Infinity))
 
   // Empty bag: nothing to show.
   useEffect(() => {
@@ -157,9 +157,12 @@ export function BagSheet({ products }: { products: Product[] }) {
   if (!count) return null
 
   const checkout = (
-    <Link href="/checkout" className="btn btn--cta" onClick={() => shopUi.setSheet(false)}>
+    <Link href="/checkout" className="btn btn--cta btn--icon" onClick={() => shopUi.setSheet(false)}>
       <CtaShape />
-      Checkout · {formatPrice(subtotal)}
+      Checkout
+      {/* The rambu stands in for the "·" separator, so the label stays as wide as before. */}
+      <Image src="/icons/rambu-rp.png" alt="" width={24} height={24} className="btn__rambu btn__rambu--sm" />
+      {formatPrice(subtotal)}
     </Link>
   )
 
@@ -216,7 +219,6 @@ export function BagSheet({ products }: { products: Product[] }) {
                 Remove sold-out items
               </button>
             )}
-            {canAddMore && <p className="sheet__hint">Tap + to take another one.</p>}
             <div className="summary">
               <div className="summary__row">
                 <span>Subtotal</span>

@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
+import { SoldOutGate } from '@/components/SoldOutGate'
 import { Topbar } from '@/components/Topbar'
 import { WaitingScreen } from '@/components/WaitingScreen'
+import { getProducts } from '@/lib/products'
 import { StockProvider } from '@/lib/stock'
 import { isWaitingMode } from '@/lib/waiting'
 import { sfPro, sfProItalic } from '@/fonts'
@@ -23,8 +25,22 @@ export const viewport: Viewport = {
   themeColor: '#f4f3ef',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+/** What the sold-out gate watches: every SKU in the catalog, plus drops still to come. */
+async function soldOutWatch() {
+  try {
+    const products = await getProducts()
+    return {
+      skus: products.flatMap((p) => p.variants.map((v) => v.sku)),
+      dropAts: products.flatMap((p) => (p.dropAt ? [p.dropAt] : [])),
+    }
+  } catch {
+    return { skus: [], dropAts: [] } // CMS unreachable: no auto sold-out, the page itself decides
+  }
+}
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const waiting = isWaitingMode()
+  const watch = waiting ? { skus: [], dropAts: [] } : await soldOutWatch()
   return (
     <html lang="en" className={`${sfPro.variable} ${sfProItalic.variable}`}>
       <head>
@@ -43,8 +59,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       ) : (
       <body>
         <StockProvider>
-          <Topbar />
-          <main>{children}</main>
+          <SoldOutGate skus={watch.skus} dropAts={watch.dropAts}>
+            <Topbar />
+            <main>{children}</main>
+          </SoldOutGate>
         </StockProvider>
       </body>
       )}

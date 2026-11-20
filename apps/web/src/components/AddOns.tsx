@@ -10,7 +10,7 @@ import { QuickAdd } from './QuickAdd'
 const MAX = 6
 
 /**
- * "Add a little extra" row on the bag step: the cheapest live, in-stock products
+ * "Extra swag" row on the bag step: the cheapest live, in-stock products
  * that aren't in the bag yet, as small cards with the same "+" as the home grid.
  * Low-price picks are easy yes-es, which lifts the average basket.
  */
@@ -32,7 +32,8 @@ export function AddOns({ products, lines }: { products: Product[]; lines: CartLi
     <section className="addons" aria-labelledby="addons-title">
       <div className="addons__head">
         <h2 id="addons-title" className="addons__title">
-          Add a little extra
+          Extra swag
+          <Image src="/icons/rambu-heart.png" alt="" width={18} height={18} className="addons__rambu" />
         </h2>
         <span className="addons__sub">From {formatPrice(picks[0]!.price)}</span>
       </div>

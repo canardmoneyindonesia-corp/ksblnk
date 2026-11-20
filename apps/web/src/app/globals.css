@@ -501,11 +501,40 @@ main {
   background: var(--line);
 }
 
-/* Rambu (Rp money-bag road sign) on the product page's Checkout button. */
+/* Rambu (Rp money-bag road sign) on the Checkout buttons (product page, home bag). */
 .btn__rambu {
   flex: none;
   width: 28px;
   height: 28px;
+}
+
+.btn__rambu--sm {
+  width: 24px;
+  height: 24px;
+}
+
+/* Small phones: the label + rambu must fit between the CTA's lettered caps, so tighten
+   the type and (on the product page) slim the stepper to give Checkout more room. */
+@media (max-width: 399px) {
+  .btn.btn--cta:has(.btn__rambu) {
+    gap: 6px;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+  }
+
+  .btn__rambu,
+  .btn__rambu--sm {
+    width: 22px;
+    height: 22px;
+  }
+
+  .cta-row .stepper button {
+    width: 40px;
+  }
+
+  .cta-row .stepper span {
+    min-width: 22px;
+  }
 }
 
 /* ---------- checkout ---------- */
@@ -758,9 +787,10 @@ main {
   white-space: nowrap;
 }
 
-/* Size · − qty + · Remove: one row, one control height, one border, one fill. */
+/* Size · − qty + · + Size · Remove: one row (wraps on narrow screens), one control height, one border, one fill. */
 .line__controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin-top: auto;
@@ -1769,12 +1799,6 @@ main {
   padding: 0 16px;
 }
 
-.sheet__hint {
-  margin: 12px 0 0;
-  font-size: 13px;
-  font-weight: 600;
-}
-
 .sheet__cta {
   position: sticky;
   bottom: 0;
@@ -2144,7 +2168,7 @@ main {
   }
 }
 
-/* ---------- checkout: "Add a little extra" (cheapest items, small cards) ---------- */
+/* ---------- checkout: "Extra swag" (cheapest items, small cards) ---------- */
 .addons {
   margin-top: 24px;
 }
@@ -2163,6 +2187,16 @@ main {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Rambu (heart-hands road sign) after the "Extra swag" title. */
+.addons__rambu {
+  flex: none;
+  width: 18px;
+  height: 18px;
 }
 
 .addons__sub {
@@ -2289,6 +2323,14 @@ main {
   appearance: none;
 }
 
+/* "+ Size": same box, lighter label, so it reads as an action rather than the line's size. */
+.line__size--add {
+  padding-right: 12px;
+  background-image: none;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
 .line__size:hover,
 .line__size:focus {
   outline: none;
@@ -2364,5 +2406,65 @@ main {
   }
   100% {
     opacity: 0;
+  }
+}
+
+/* ---------- sold-out mode: logo bar, rotating ring, money rain on loop ---------- */
+.sold-out {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.sold-out__stage {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px calc(24px + var(--safe-bottom));
+}
+
+.sold-out__badge {
+  position: relative;
+  margin: 0;
+  width: min(78vw, 440px, calc(100dvh - min(50vw, 180px) - 64px));
+  min-width: 220px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+
+.sold-out__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: music-spin 16s linear infinite;
+}
+
+.sold-out__ring text {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  fill: var(--ink);
+}
+
+.sold-out__sign {
+  width: 30%;
+  height: auto;
+}
+
+/* Same clip as the paid-order rain, but it keeps falling instead of fading out. */
+.money-rain--loop {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sold-out__ring {
+    animation: none;
+  }
+  .money-rain--loop {
+    display: none;
   }
 }
