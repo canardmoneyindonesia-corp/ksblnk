@@ -83,8 +83,8 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
       : stockLeft !== undefined && stockLeft < inBag
         ? stockLeft === 0
           ? 'This size just sold out. Remove it to check out.'
-          : `Only ${stockLeft} left in this size. Lower your quantity.`
-        : `You've got the last one${inBag > 1 ? 's' : ''} in this size.`
+          : 'Not enough left in this size. Lower your quantity.'
+        : 'No more available in this size.'
     cta = (
       <div className="cta-row">
         <div className="stepper" role="group" aria-label="Quantity in bag">
@@ -114,7 +114,6 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
         <div className={`sizes${nudge ? ' sizes--nudge' : ''}`} role="radiogroup" aria-label="Size">
           {variants.map((v) => {
             const out = isOut(v.sku)
-            const n = avail(v.sku)
             const q = qtyInBag(v.sku)
             return (
               <button
@@ -126,7 +125,6 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
                 onClick={() => setSelected(v.sku)}
               >
                 {v.label}
-                {n !== undefined && n > 0 && n <= 3 && <small>{n} left</small>}
                 {q > 0 && (
                   <span className="size__bag" aria-label={`${q} in bag`}>
                     {q}

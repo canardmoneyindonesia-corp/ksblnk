@@ -117,13 +117,12 @@ export function QuickAdd({ id, name, variants, dropAt }: { id: string; name: str
             const q = qtyInBag(v.sku)
             const out = n === 0
             const maxed = q >= capFor(v.sku)
-            const meta = out ? 'Sold out' : n !== undefined && n <= 3 ? `${n} left` : null
             return (
               <li key={v.sku} role="group" aria-label={`Size ${v.label}`} className={`quick__opt${out ? ' quick__opt--out' : ''}${q > 0 ? ' quick__opt--in' : ''}`}>
                 <span className="quick__opt-text">
                   <span className="quick__opt-top">
                     <span className="quick__opt-label">{v.label}</span>
-                    {meta && <span className={`quick__opt-meta${!out ? ' quick__opt-meta--low' : ''}`}>{meta}</span>}
+                    {out && <span className="quick__opt-meta">Sold out</span>}
                   </span>
                   {v.detail && <span className="quick__opt-detail">{v.detail}</span>}
                 </span>
