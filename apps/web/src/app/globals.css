@@ -1,14 +1,17 @@
 /* Mobile-first. Desktop tweaks live in the min-width queries at the bottom. */
 :root {
   --bg: #f4f3ef;
+  --logo-yellow: #c9c636; /* sampled from the logo clip's card background */
   --ink: #111111;
   --muted: #6d6d68;
   --line: #dcdad3;
   --card: #e9e7e0;
-  --accent: #d8ff3c;
+  --accent: #f6e034;
   --danger: #d6331c;
   --gutter: 12px;
   --bar-h: 64px;
+  /* Checkout CTA row under the collapsed bag pill: 55px CTA + 8px gap. */
+  --bag-cta: 63px;
   /* Gap between the floating bag pill and the screen edges. */
   --float: 12px;
   /* Frosted "cloud" glass used by the bag pill / sheet. */
@@ -64,30 +67,43 @@ h1 {
 }
 
 main {
-  padding-bottom: calc(var(--bar-h) + var(--float) + var(--safe-bottom) + 24px);
+  padding-bottom: calc(var(--bar-h) + var(--bag-cta) + var(--float) + var(--safe-bottom) + 24px);
 }
 
 /* ---------- header ---------- */
+/* The topbar is the animated logo, edge to edge. The clip is a 2:1 opaque yellow card:
+   on phones the bar is exactly 2:1 so the whole card fills it; past 360px tall it stops
+   growing and the card sits centred on matching yellow, edges faded into it. Scrolls
+   away with the page (a banner this tall would eat the viewport if it stayed stuck). */
 .topbar {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 52px;
-  padding: 0 var(--gutter);
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line);
+  height: min(50vw, 180px);
+  background: var(--logo-yellow);
+  overflow: hidden;
 }
 
 .logo {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 22px;
-  letter-spacing: 0.01em;
-  line-height: 1;
+  display: block;
+  height: 100%;
+  line-height: 0;
+}
+
+.logo__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Narrow screens: the card fills the bar exactly, so no fade needed. */
+@media (max-width: 360px) {
+  .logo__video {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
 }
 
 .bag-link {
@@ -207,7 +223,8 @@ main {
 
 .back-btn {
   position: absolute;
-  top: 10px;
+  /* Product pages have no topbar, so this sits at the screen edge: clear the notch. */
+  top: max(10px, env(safe-area-inset-top));
   left: var(--gutter);
   z-index: 5;
   display: inline-flex;
@@ -322,6 +339,22 @@ main {
   font-size: 10px;
   font-weight: 400;
   color: var(--danger);
+}
+
+/* Measurements of the selected size, under the size grid. */
+.size-detail {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.size-detail__label {
+  font-weight: 700;
+  color: var(--ink);
 }
 
 .size--on {
@@ -467,6 +500,26 @@ main {
   margin-top: 12px;
 }
 
+/* "Keep shopping" above the stepper + checkout row: back to the grid for more pieces. */
+.btn--shop {
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: 8px;
+  background: var(--bg);
+  font-size: 13px;
+}
+
+.btn--shop:active {
+  background: var(--line);
+}
+
+/* Rambu (Rp money-bag road sign) on the product page's Checkout button. */
+.btn__rambu {
+  flex: none;
+  width: 28px;
+  height: 28px;
+}
+
 /* ---------- checkout ---------- */
 .checkout {
   padding: 16px var(--gutter);
@@ -480,13 +533,41 @@ main {
   margin-bottom: 12px;
 }
 
-/* "1 Bag / 2 Shipping" progress */
+/* Back button + "1 Bag / 2 Shipping" progress */
+.steps-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin: 0 0 18px;
+}
+
+.steps-bar__back {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  background: transparent;
+}
+
+.steps-bar__back:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.steps-bar__back:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
 .steps {
+  flex: 1;
   display: flex;
   gap: 6px;
   list-style: none;
   padding: 0;
-  margin: 0 0 18px;
+  margin: 0;
 }
 
 .steps__item {
@@ -616,9 +697,9 @@ main {
 
 .line {
   display: grid;
-  grid-template-columns: 80px 1fr auto;
+  grid-template-columns: 80px 1fr;
   gap: 12px;
-  padding: 12px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -644,14 +725,31 @@ main {
 .line__info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   min-width: 0;
+}
+
+/* Name left, price right, top-aligned on the first line of the name. */
+.line__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .line__name {
   font-weight: 600;
   text-transform: uppercase;
   font-size: 13px;
+  line-height: 1.3;
+  min-width: 0;
+}
+
+.line__prices {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
 }
 
 .line__meta {
@@ -662,31 +760,76 @@ main {
 .line__price {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.line__unit {
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Size · − qty + · Remove: one row, one control height, one border, one fill. */
+.line__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.line__remove {
+  margin-left: auto;
+  min-height: 40px;
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.line__remove:hover {
+  color: var(--ink);
+}
+
+.line__note {
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .qty {
   display: inline-flex;
   align-items: center;
-  margin-top: auto;
+  height: 40px;
   border: 1px solid var(--line);
   width: fit-content;
 }
 
 .qty button {
-  width: 40px;
-  height: 36px;
+  width: 38px;
+  height: 100%;
   border: 0;
   background: transparent;
+  color: var(--ink);
   font-size: 18px;
+  cursor: pointer;
 }
 
 .qty button:disabled {
   opacity: 0.3;
+  cursor: default;
 }
 
 .qty span {
   min-width: 24px;
   text-align: center;
+  font-size: 16px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
@@ -771,7 +914,7 @@ main {
 
   .pdp__info {
     position: sticky;
-    top: 76px;
+    top: 24px;
     align-self: start;
     padding: 0;
   }
@@ -932,6 +1075,145 @@ main {
   padding: 14px;
   border: 1px solid var(--ink);
   background: #fff;
+}
+
+.summary__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Small (i) beside a summary label. Padding widens the tap target without moving the text. */
+.info-btn {
+  display: inline-grid;
+  place-items: center;
+  margin: -6px;
+  padding: 6px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.info-btn:hover,
+.info-btn:focus-visible {
+  color: var(--ink);
+}
+
+/* (i) with a small text bubble above it (Ongkos kirim info). */
+.info-tip {
+  position: relative;
+  display: inline-grid;
+}
+
+.info-tip__bubble {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: -8px;
+  z-index: 5;
+  padding: 6px 10px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  animation: fade 0.15s ease-out;
+}
+
+/* Little pointer under the bubble, aimed at the (i). */
+.info-tip__bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 12px;
+  border: 6px solid transparent;
+  border-top-color: var(--ink);
+}
+
+/* Popup that plays a clip with its song (Gaya hidup info). */
+.clip-modal {
+  width: min(360px, calc(100vw - 32px));
+  padding: 0;
+  border: 1px solid var(--ink);
+  background: #fff;
+  color: var(--ink);
+  overflow: visible;
+}
+
+.clip-modal[open] {
+  animation: fade 0.2s ease-out;
+}
+
+.clip-modal::backdrop {
+  background: rgb(17 17 17 / 0.45);
+  backdrop-filter: blur(3px);
+}
+
+.clip-modal__media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  background: var(--card);
+  cursor: pointer;
+}
+
+.clip-modal__media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.clip-modal__play {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 20px;
+}
+
+.clip-modal__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px 14px;
+  font-size: 14px;
+}
+
+.clip-modal__info strong {
+  font-size: 17px;
+}
+
+.clip-modal__info span,
+.clip-modal__info p {
+  color: var(--muted);
+}
+
+.clip-modal__info p {
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+
+.clip-modal__close {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+  cursor: pointer;
 }
 
 .summary__row--total {
@@ -1352,6 +1634,53 @@ main {
   }
 }
 
+/* Collapsed, the pill floats above the checkout CTA row (.bag-cta). */
+.sheet:not(.sheet--open) {
+  bottom: calc(var(--float) + var(--safe-bottom) + var(--bag-cta));
+}
+
+.bag-cta {
+  position: fixed;
+  left: var(--float);
+  right: var(--float);
+  bottom: calc(var(--float) + var(--safe-bottom));
+  z-index: 31;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.bag-cta .btn--cta {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Round basket left of the CTA: opens the bag. Same black and cream as the CTA. */
+.bag-cta__basket {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #f6f3ea;
+  filter: drop-shadow(0 4px 7px rgb(17 17 17 / 0.25));
+  transition: transform 0.15s ease-out;
+}
+
+.bag-cta__basket:active {
+  transform: scale(0.94);
+}
+
+.bag-cta__basket:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .sheet--open {
   left: 8px;
   right: 8px;
@@ -1410,25 +1739,8 @@ main {
   padding: 18px 16px 8px;
 }
 
-.bagbar .btn {
-  flex: 1;
-  min-width: 0;
-  min-height: 48px;
-  padding: 0 14px;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  border-radius: 999px;
-  border: 0;
-  box-shadow: 0 4px 14px rgb(17 17 17 / 0.25);
-  transition: transform 0.15s ease-out;
-}
-
-.bagbar .btn:active {
-  transform: scale(0.97);
-}
-
 .bagbar__toggle {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1438,10 +1750,6 @@ main {
   border-radius: 999px;
   background: transparent;
   text-align: left;
-}
-
-.sheet--open .bagbar__toggle {
-  flex: 1;
 }
 
 .bagbar__toggle .bag-count {
@@ -1497,10 +1805,63 @@ main {
   background: linear-gradient(to top, rgb(255 255 255 / 0.9) 55%, transparent);
 }
 
-.sheet__cta .btn {
-  border-radius: 999px;
+/* Checkout CTA: the button's fill is the CtaShape bar (black, BB lettering on the left,
+   AS/97 on the right), drawn behind the text. The label is centred on the plain black
+   middle by padding each side by its cap's width (cap width = height × 150/345 left,
+   × 295/345 right). The shadow is a drop-shadow so it follows the lettering.
+   .btn.btn--cta so it outranks .sheet__cta .btn. */
+.btn.btn--cta {
+  --cta-h: 55px;
+  position: relative;
+  isolation: isolate;
+  min-height: var(--cta-h);
+  padding: 0 calc(var(--cta-h) * 295 / 345 + 4px) 0 calc(var(--cta-h) * 150 / 345 + 4px);
   border: 0;
-  box-shadow: 0 4px 14px rgb(17 17 17 / 0.25);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #f6f3ea;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  filter: drop-shadow(0 4px 7px rgb(17 17 17 / 0.25));
+  transition: transform 0.15s ease-out;
+}
+
+.btn.btn--cta:active {
+  transform: scale(0.97);
+}
+
+.cta-shape {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: flex;
+  color: var(--ink);
+  pointer-events: none;
+}
+
+.cta-shape__cap {
+  flex: none;
+  display: block;
+  height: 100%;
+  overflow: visible;
+}
+
+.cta-shape__cap--l {
+  aspect-ratio: 150 / 345;
+}
+
+.cta-shape__cap--r {
+  aspect-ratio: 295 / 345;
+}
+
+/* Plain bar between the caps: the bar runs y 3.25–340.5 of the caps' 345. */
+.cta-shape__mid {
+  flex: 1;
+  margin: 0 -0.5px;
+  background: linear-gradient(currentColor, currentColor) 0 41.9% / 100% 97.75% no-repeat;
 }
 
 .sheet-backdrop {
@@ -1528,19 +1889,15 @@ main {
   background: rgb(255 255 255 / 0.6);
 }
 
-.sheet .line__size select {
+.sheet .line__size {
   border-radius: 999px;
+  background-color: rgb(255 255 255 / 0.6);
   background-position: right 11px center;
   padding-left: 12px;
 }
 
 @keyframes sheet-open {
   from { transform: translateY(30%); opacity: 0.6; }
-}
-
-/* "+" in a bag line, highlighted while one more unit is allowed. */
-.qty button.qty__push {
-  background: var(--accent);
 }
 
 @keyframes rise {
@@ -1560,6 +1917,7 @@ main {
   .quick__backdrop,
   .sheet,
   .sheet--open,
+  .bag-cta,
   .sheet-backdrop,
   .bagbar__toggle .bag-count {
     animation: none;
@@ -1575,9 +1933,20 @@ main {
     width: 420px;
   }
 
+  .sheet:not(.sheet--open) {
+    bottom: calc(16px + var(--bag-cta));
+  }
+
+  .bag-cta {
+    left: auto;
+    right: var(--gutter);
+    bottom: 16px;
+    width: 420px;
+  }
+
   .bagbar-spacer {
     display: block;
-    height: 80px;
+    height: calc(80px + var(--bag-cta));
   }
 }
 
@@ -1648,7 +2017,7 @@ main {
     repeating-radial-gradient(circle, rgb(255 255 255 / 0.05) 0 1px, transparent 1px 3px),
     conic-gradient(from 0deg, #cfd3d6, #f3e9ff, #b7e4ff, #e6ffd0, #ffe0f0, #cfd3d6, #fff6c9, #c6d8ff, #cfd3d6);
   box-shadow: 0 10px 30px rgb(0 0 0 / 0.18), inset 0 0 0 1px rgb(255 255 255 / 0.25);
-  animation: music-spin 3.2s linear infinite;
+  animation: music-spin 6s linear infinite;
   animation-play-state: paused;
 }
 
@@ -1691,6 +2060,13 @@ main {
   border-radius: 50%;
   object-fit: cover;
   background: var(--ink);
+  /* Spins with the disc so the clip reads as printed on the CD face. */
+  animation: music-spin 6s linear infinite;
+  animation-play-state: paused;
+}
+
+.music__media--playing .music__video {
+  animation-play-state: running;
 }
 
 .music__disc--video {
@@ -1770,7 +2146,8 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .music__disc {
+  .music__disc,
+  .music__video {
     animation: none;
   }
 }
@@ -1819,9 +2196,12 @@ main {
   display: none;
 }
 
+/* min-width: 0 so a long one-line name truncates instead of widening its card
+   (flex/grid items otherwise never shrink below their content's width). */
 .addon {
   position: relative;
   flex: 0 0 112px;
+  min-width: 0;
   scroll-snap-align: start;
 }
 
@@ -1829,6 +2209,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .addon__media {
@@ -1883,7 +2264,7 @@ main {
 @media (min-width: 1024px) {
   .addons__list {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     margin: 0;
     padding: 0;
     overflow: visible;
@@ -1896,34 +2277,28 @@ main {
   }
 }
 
-/* ---------- bag line: size picker (native select, styled as a chip) ---------- */
+/* ---------- bag line: size picker (native select, same box as the qty stepper) ---------- */
 .line__size {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.line__size select {
-  min-height: 30px;
-  padding: 2px 26px 2px 10px;
+  height: 40px;
+  padding: 0 28px 0 12px;
   border: 1px solid var(--line);
   border-radius: 0;
-  background: #fff
+  background: transparent
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24'%3E%3Cpath d='M5 9l7 7 7-7' fill='none' stroke='%23111' stroke-width='3' stroke-linecap='square'/%3E%3C/svg%3E")
-    no-repeat right 9px center;
+    no-repeat right 10px center;
   color: var(--ink);
   font: inherit;
   /* 16px stops iOS from zooming in when the picker opens */
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
   cursor: pointer;
   -webkit-appearance: none;
   appearance: none;
 }
 
-.line__size select:hover,
-.line__size select:focus {
+.line__size:hover,
+.line__size:focus {
   outline: none;
   border-color: var(--ink);
 }
@@ -1936,14 +2311,26 @@ main {
   letter-spacing: 0;
 }
 
-/* ---------- pre-drop waiting mode: full-screen session loop ---------- */
+/* ---------- pre-drop waiting mode: session loop boxed on a white page ---------- */
+/* The whole 2:1 frame stays visible (no crop), so the clip reads on a phone too. */
 .waiting {
   position: fixed;
   inset: 0;
-  background: #000 url('/fx/session-loop.jpg') center / cover no-repeat;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: #fff;
 }
 
-.waiting video {
+.waiting__frame {
+  /* As wide as fits: screen width, 1280px (the clip's size) or twice the free height. */
+  width: min(calc(100vw - 32px), 1280px, calc((100dvh - 32px) * 2));
+  aspect-ratio: 2 / 1;
+  background: #000 url('/fx/session-loop.jpg') center / cover no-repeat;
+  overflow: hidden;
+}
+
+.waiting__frame video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1951,7 +2338,7 @@ main {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .waiting video {
+  .waiting__frame video {
     display: none;
   }
 }

@@ -12,6 +12,8 @@ import { cart, useCart } from '@/lib/cart'
 import { useStock } from '@/lib/stock'
 import { AddOns } from './AddOns'
 import { BagLine } from './BagLine'
+import { GayaHidupInfo } from './GayaHidupInfo'
+import { InfoTip } from './InfoTip'
 import { OrderResult } from './OrderResult'
 import { ShippingForm, useSavedShipping } from './ShippingForm'
 
@@ -132,11 +134,15 @@ function Bag({ products, step }: { products: Product[]; step: 'bag' | 'shipping'
         <span>{formatPrice(subtotal)}</span>
       </div>
       <div className="summary__row summary__row--sub">
-        <span>Ongkos kirim</span>
+        <span className="summary__label">
+          Ongkos kirim <InfoTip text="All over Indonesia" label="Where do you ship?" />
+        </span>
         <span>{shippingFee ? formatPrice(shippingFee) : 'Included'}</span>
       </div>
       <div className="summary__row summary__row--sub">
-        <span>Gaya hidup</span>
+        <span className="summary__label">
+          Gaya hidup <GayaHidupInfo />
+        </span>
         <span>Included</span>
       </div>
       <div className="summary__row summary__row--sub">
@@ -248,7 +254,7 @@ function Bag({ products, step }: { products: Product[]; step: 'bag' | 'shipping'
   )
 }
 
-/** "1 Bag / 2 Shipping" progress. The finished step links back. */
+/** Back button + "1 Bag / 2 Shipping" progress. The finished step links back. */
 function Steps({ step }: { step: 'bag' | 'shipping' }) {
   const onShipping = step === 'shipping'
   const bag = (
@@ -258,22 +264,40 @@ function Steps({ step }: { step: 'bag' | 'shipping' }) {
     </>
   )
   return (
-    <ol className="steps" aria-label="Checkout progress">
-      <li
-        className={`steps__item ${onShipping ? 'is-done' : 'is-current'}`}
-        aria-current={onShipping ? undefined : 'step'}
+    <div className="steps-bar">
+      <Link
+        href={onShipping ? '/checkout' : '/'}
+        className="steps-bar__back"
+        aria-label={onShipping ? 'Back to bag' : 'Back to shop'}
       >
-        {onShipping ? <Link href="/checkout">{bag}</Link> : <span>{bag}</span>}
-      </li>
-      <li className={`steps__item${onShipping ? ' is-current' : ''}`} aria-current={onShipping ? 'step' : undefined}>
-        <span>
-          <span className="steps__num">2</span>
-          Shipping
-        </span>
-      </li>
-    </ol>
+        <BackIcon />
+      </Link>
+      <ol className="steps" aria-label="Checkout progress">
+        <li
+          className={`steps__item ${onShipping ? 'is-done' : 'is-current'}`}
+          aria-current={onShipping ? undefined : 'step'}
+        >
+          {onShipping ? <Link href="/checkout">{bag}</Link> : <span>{bag}</span>}
+        </li>
+        <li
+          className={`steps__item${onShipping ? ' is-current' : ''}`}
+          aria-current={onShipping ? 'step' : undefined}
+        >
+          <span>
+            <span className="steps__num">2</span>
+            Shipping
+          </span>
+        </li>
+      </ol>
+    </div>
   )
 }
+
+const BackIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" className="icon">
+    <path d="M19 12H6M11 6l-6 6 6 6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" />
+  </svg>
+)
 
 const LockIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" className="icon">

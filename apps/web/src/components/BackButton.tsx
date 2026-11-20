@@ -7,10 +7,10 @@ import { useRouter } from 'next/navigation'
  * Goes back in history when the visitor arrived from inside the shop (keeps scroll
  * position on the grid); otherwise — shared link, new tab — falls through to the home link.
  */
-export function BackButton({ fallback = '/' }: { fallback?: string }) {
+export function useBackClick() {
   const router = useRouter()
 
-  function onClick(e: React.MouseEvent<HTMLAnchorElement>) {
+  return function onClick(e: React.MouseEvent<HTMLAnchorElement>) {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return
     let sameOrigin = false
     try {
@@ -21,6 +21,10 @@ export function BackButton({ fallback = '/' }: { fallback?: string }) {
       router.back()
     }
   }
+}
+
+export function BackButton({ fallback = '/' }: { fallback?: string }) {
+  const onClick = useBackClick()
 
   return (
     <Link href={fallback} className="back-btn" onClick={onClick} aria-label="Go back">

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import Link from 'next/link'
+import { Topbar } from '@/components/Topbar'
 import { WaitingScreen } from '@/components/WaitingScreen'
 import { StockProvider } from '@/lib/stock'
 import { isWaitingMode } from '@/lib/waiting'
@@ -43,11 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       ) : (
       <body>
         <StockProvider>
-          <header className="topbar">
-            <Link href="/" className="logo" aria-label="Kasablanka home">
-              KASABLANKA
-            </Link>
-          </header>
+          <Topbar />
           <main>{children}</main>
         </StockProvider>
       </body>

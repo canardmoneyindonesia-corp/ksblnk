@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "turbo run dev",
+    "dev:waiting": "pnpm --filter @kskblnk/web dev:waiting",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
     "infra:up": "docker compose up -d",

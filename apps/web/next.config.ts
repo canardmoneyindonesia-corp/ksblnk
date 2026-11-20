@@ -7,6 +7,9 @@ const cms = new URL(process.env.CMS_URL ?? 'http://localhost:3001')
 const cmsIsLocal = !process.env.VERCEL && ['localhost', '127.0.0.1'].includes(cms.hostname)
 
 const nextConfig: NextConfig = {
+  // `pnpm dev:waiting` builds into its own folder: next dev locks its build folder, and this
+  // lets the waiting-mode server run beside the normal one. Unset (default) = .next.
+  ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
   // Workspace packages ship TypeScript source.
   transpilePackages: ['@kskblnk/sdk', '@kskblnk/types', '@kskblnk/ui'],
   images: {

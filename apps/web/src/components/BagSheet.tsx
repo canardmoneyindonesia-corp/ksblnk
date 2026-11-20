@@ -8,6 +8,7 @@ import { cart, cartCount, useCart } from '@/lib/cart'
 import { shopUi, useSheetOpen } from '@/lib/shop-ui'
 import { useStock } from '@/lib/stock'
 import { BagLine } from './BagLine'
+import { CtaShape } from './CtaShape'
 
 /** Rubber band: the further you pull past a limit, the less it moves. */
 const resist = (x: number, k = 120) => x / (1 + Math.abs(x) / k)
@@ -16,8 +17,8 @@ const reducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /**
- * Home page bag: a floating frosted pill (count, subtotal, Checkout) pinned to
- * the bottom. Tap it or swipe it up to open a sheet with every line and its
+ * Home page bag: a floating frosted pill (count, subtotal) pinned to the bottom,
+ * with the full checkout CTA on its own row beneath it. Tap it or swipe it up to open a sheet with every line and its
  * − / + buttons; swipe the sheet down (or tap outside) to close it.
  */
 export function BagSheet({ products }: { products: Product[] }) {
@@ -156,7 +157,8 @@ export function BagSheet({ products }: { products: Product[] }) {
   if (!count) return null
 
   const checkout = (
-    <Link href="/checkout" className="btn btn--primary" onClick={() => shopUi.setSheet(false)}>
+    <Link href="/checkout" className="btn btn--cta" onClick={() => shopUi.setSheet(false)}>
+      <CtaShape />
       Checkout · {formatPrice(subtotal)}
     </Link>
   )
@@ -189,7 +191,6 @@ export function BagSheet({ products }: { products: Product[] }) {
                 {open ? '▾' : '▴'}
               </span>
             </button>
-            {!open && checkout}
           </div>
         </div>
 
@@ -227,6 +228,27 @@ export function BagSheet({ products }: { products: Product[] }) {
           </div>
         )}
       </section>
+
+      {/* Collapsed: the full checkout CTA on its own row under the pill, not squeezed into it. */}
+      {!open && (
+        <div className="bag-cta">
+          <button
+            className="bag-cta__basket"
+            onClick={() => shopUi.setSheet(true)}
+            aria-label={`Open bag, ${count} ${count === 1 ? 'item' : 'items'}`}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2.5 10.5h19" />
+                <path d="M4 10.5l1.7 8a2 2 0 0 0 2 1.5h8.6a2 2 0 0 0 2-1.5l1.7-8" />
+                <path d="M6.5 10.5 10 4M17.5 10.5 14 4" />
+                <path d="M9.5 14v3M14.5 14v3" />
+              </g>
+            </svg>
+          </button>
+          {checkout}
+        </div>
+      )}
     </>
   )
 }

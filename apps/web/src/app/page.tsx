@@ -50,11 +50,11 @@ export default async function HomePage() {
       {/* Pinned to the right column, 2nd row via CSS (.grid__item--music). */}
       <li className="grid__item grid__item--music">
         <MusicCard
-          src="/music/kurang-riset.mp3"
+          src="/music/gaya-hidup.mp3"
           video="/fx/gaya-hidup.mp4"
           poster="/fx/gaya-hidup.jpg"
-          title="Kurang Riset"
-          artist="Quest, Basboi & Wicigo Shawty"
+          title="Gaya Hidup"
+          artist="Basboi"
         />
       </li>
     </ul>

@@ -70,7 +70,7 @@ export function MusicCard({
         const n = 24
         const bw = w / n
         g.clearRect(0, 0, w, h)
-        g.fillStyle = '#d8ff3c'
+        g.fillStyle = '#f6e034'
         for (let i = 0; i < n; i++) {
           const v = data[i]! / 255
           const bh = Math.max(2, v * h)

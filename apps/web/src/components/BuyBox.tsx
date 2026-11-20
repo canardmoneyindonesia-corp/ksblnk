@@ -1,11 +1,13 @@
 'use client'
 
 import type { Variant } from '@kskblnk/types'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { cart, cartCount, useCart } from '@/lib/cart'
 import { formatCountdown } from '@/lib/format'
 import { useCountdown, useStock } from '@/lib/stock'
+import { useBackClick } from './BackButton'
 
 export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: string | null }) {
   const { stock, ready } = useStock()
@@ -13,6 +15,7 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
   const left = useCountdown(dropAt)
   const [selected, setSelected] = useState<string | null>(variants.length === 1 ? variants[0]!.sku : null)
   const [nudge, setNudge] = useState(false)
+  const back = useBackClick()
 
   const avail = (sku: string) => (ready && sku in stock ? stock[sku]! : undefined)
   const isOut = (sku: string) => avail(sku) === 0
@@ -20,6 +23,8 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
   const allOut = ready && variants.length > 0 && variants.every((v) => isOut(v.sku))
   const notLive = dropAt !== null && (left === null || left > 0)
 
+  const selectedVariant = selected ? variants.find((v) => v.sku === selected) : undefined
+  const selectedDetail = selectedVariant?.detail
   const inBag = selected ? qtyInBag(selected) : 0
   const stockLeft = selected ? avail(selected) : undefined
   // Most units this buyer can take for the selected size: whatever stock is left.
@@ -77,15 +82,22 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
       </button>
     )
   } else {
-    // Already in the bag: keep the buyer on the page with a stepper, push for one more.
+    // Already in the bag: stepper for one more, checkout, or back to the grid for other pieces.
     hint = canAddMore
-      ? `${inBag} in your bag. Grab another one, tap +`
+      ? null
       : stockLeft !== undefined && stockLeft < inBag
         ? stockLeft === 0
           ? 'This size just sold out. Remove it to check out.'
           : 'Not enough left in this size. Lower your quantity.'
         : 'No more available in this size.'
     cta = (
+      <>
+      <Link href="/" className="btn btn--shop" onClick={back}>
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" />
+        </svg>
+        Keep shopping
+      </Link>
       <div className="cta-row">
         <div className="stepper" role="group" aria-label="Quantity in bag">
           <button aria-label="Remove one" onClick={minus}>
@@ -101,10 +113,12 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
             +
           </button>
         </div>
-        <Link href="/checkout" className="btn btn--primary">
-          Checkout ({bagCount}) →
+        <Link href="/checkout" className="btn btn--primary btn--icon">
+          Checkout ({bagCount})
+          <Image src="/icons/rambu-rp.png" alt="" width={28} height={28} className="btn__rambu" />
         </Link>
       </div>
+      </>
     )
   }
 
@@ -134,6 +148,12 @@ export function BuyBox({ variants, dropAt }: { variants: Variant[]; dropAt: stri
             )
           })}
         </div>
+      )}
+      {selectedDetail && (
+        <p className="size-detail" aria-live="polite">
+          <span className="size-detail__label">{selectedVariant!.label}</span>
+          {selectedDetail}
+        </p>
       )}
       <div className="cta-bar">
         {hint && (
